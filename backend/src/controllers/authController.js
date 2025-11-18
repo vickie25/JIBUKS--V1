@@ -1,4 +1,4 @@
-const db = require('../db');
+const { prisma } = require('../lib/prisma');
 const bcrypt = require('bcrypt');
 const { generateToken, generateRefreshToken } = require('../middleware/auth');
 
@@ -14,12 +14,11 @@ async function login(req, res, next) {
       return res.status(400).json({ error: 'email and password required' });
     }
 
-    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (result.rows.length === 0) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const user = result.rows[0];
     const match = await bcrypt.compare(password, user.password || '');
     if (!match) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -31,7 +30,7 @@ async function login(req, res, next) {
     res.json({
       accessToken,
       refreshToken,
-      user: { id: user.id, email: user.email, name: user.name, tenant_id: user.tenant_id },
+      user: { id: user.id, email: user.email, name: user.name, tenantId: user.tenantId },
     });
   } catch (err) {
     next(err);
@@ -63,55 +62,60 @@ async function auth0Callback(req, res, next) {
  */
 async function oauth2Login(req, res, next) {
   try {
-    const { auth0_id, email, name, tenant_id } = req.body;
-    if (!auth0_id || !email) {
-      return res.status(400).json({ error: 'auth0_id and email required' });
+    const { auth0Id, email, name, tenantId } = req.body;
+    if (!auth0Id || !email) {
+      return res.status(400).json({ error: 'auth0Id and email required' });
     }
 
     // Try to find existing user with auth0_id
-    let result = await db.query('SELECT * FROM users WHERE auth0_id = $1', [auth0_id]);
+    let user = await prisma.user.findUnique({ where: { auth0Id } });
     
-    if (result.rows.length > 0) {
+    if (user) {
       // User exists, return token
-      const user = result.rows[0];
       const accessToken = generateToken(user);
       const refreshToken = generateRefreshToken(user);
 
       return res.json({
         accessToken,
         refreshToken,
-        user: { id: user.id, email: user.email, name: user.name, tenant_id: user.tenant_id },
+        user: { id: user.id, email: user.email, name: user.name, tenantId: user.tenantId },
       });
     }
 
     // Create new user (auto-signup)
     // If no tenant_id provided, create or use default tenant
-    let finalTenantId = tenant_id;
+    let finalTenantId = tenantId;
     if (!finalTenantId) {
       // Create a default tenant for this user
-      const tenantResult = await db.query(
-        'INSERT INTO tenants(name, slug, owner_email) VALUES($1, $2, $3) RETURNING id',
-        [email.split('@')[0], email.split('@')[0], email]
-      );
-      finalTenantId = tenantResult.rows[0].id;
+      const tenant = await prisma.tenant.create({
+        data: {
+          name: email.split('@')[0],
+          slug: email.split('@')[0],
+          ownerEmail: email,
+        },
+      });
+      finalTenantId = tenant.id;
     }
 
-    const insertResult = await db.query(
-      'INSERT INTO users(tenant_id, email, name, auth0_id) VALUES($1, $2, $3, $4) RETURNING *',
-      [finalTenantId, email, name || email, auth0_id]
-    );
+    user = await prisma.user.create({
+      data: {
+        tenantId: finalTenantId,
+        email,
+        name: name || email,
+        auth0Id,
+      },
+    });
 
-    const user = insertResult.rows[0];
     const accessToken = generateToken(user);
     const refreshToken = generateRefreshToken(user);
 
     res.status(201).json({
       accessToken,
       refreshToken,
-      user: { id: user.id, email: user.email, name: user.name, tenant_id: user.tenant_id },
+      user: { id: user.id, email: user.email, name: user.name, tenantId: user.tenantId },
     });
   } catch (err) {
-    if (err.code === '23505') {
+    if (err.code === 'P2002') {
       return res.status(409).json({ error: 'User already exists' });
     }
     next(err);
@@ -134,12 +138,11 @@ async function refreshToken(req, res, next) {
 
     try {
       const decoded = jwt.verify(refreshToken, JWT_SECRET);
-      const result = await db.query('SELECT * FROM users WHERE id = $1', [decoded.id]);
-      if (result.rows.length === 0) {
+      const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+      if (!user) {
         return res.status(401).json({ error: 'User not found' });
       }
 
-      const user = result.rows[0];
       const newAccessToken = generateToken(user);
 
       res.json({ accessToken: newAccessToken });
@@ -161,16 +164,24 @@ async function getCurrentUser(req, res, next) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const result = await db.query(
-      'SELECT id, email, name, auth0_id, tenant_id, avatar_url, created_at FROM users WHERE id = $1',
-      [userId]
-    );
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        auth0Id: true,
+        tenantId: true,
+        avatarUrl: true,
+        createdAt: true,
+      },
+    });
 
-    if (result.rows.length === 0) {
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(result.rows[0]);
+    res.json(user);
   } catch (err) {
     next(err);
   }
