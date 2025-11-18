@@ -1,12 +1,23 @@
-const db = require('../db');
+const { prisma } = require('../lib/prisma');
 const bcrypt = require('bcrypt');
 
 const SALT_ROUNDS = 10;
 
 async function listUsers(req, res, next) {
   try {
-    const result = await db.query('SELECT id, name, email, created_at FROM users ORDER BY id DESC');
-    res.json(result.rows);
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatarUrl: true,
+        isActive: true,
+        tenantId: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(users);
   } catch (err) {
     next(err);
   }
@@ -14,22 +25,35 @@ async function listUsers(req, res, next) {
 
 async function createUser(req, res, next) {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, tenantId } = req.body;
     if (!email || !password) {
       return res.status(400).json({ error: 'email and password required' });
     }
 
     const hashed = await bcrypt.hash(password, SALT_ROUNDS);
 
-    const insert = await db.query(
-      'INSERT INTO users(name, email, password) VALUES($1, $2, $3) RETURNING id, name, email, created_at',
-      [name || null, email, hashed]
-    );
+    const user = await prisma.user.create({
+      data: {
+        name: name || null,
+        email,
+        password: hashed,
+        tenantId: tenantId || null,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatarUrl: true,
+        isActive: true,
+        tenantId: true,
+        createdAt: true,
+      },
+    });
 
-    res.status(201).json(insert.rows[0]);
+    res.status(201).json(user);
   } catch (err) {
-    // unique violation code for Postgres is '23505'
-    if (err.code === '23505') {
+    // Unique constraint violation (Prisma code P2002)
+    if (err.code === 'P2002') {
       return res.status(409).json({ error: 'email already exists' });
     }
     next(err);
