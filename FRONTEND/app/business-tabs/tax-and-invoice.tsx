@@ -16,7 +16,7 @@ export default function TaxAndInvoiceScreen() {
         console.log({ vatChoice, styleChoice });
         // Navigate to success screen with all collected data
         router.push({
-            pathname: '/business-onboarding-success',
+            pathname: '/business-tabs/business-onboarding-success',
             params: { ...params, vatChoice, styleChoice }
         });
     };

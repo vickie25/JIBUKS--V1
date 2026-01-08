@@ -85,7 +85,7 @@ export default function BusinessOnboardingScreen() {
 
         // Navigate to contact information
         router.push({
-            pathname: '/contact-information',
+            pathname: '/business-tabs/contact-information',
             params: { businessName, industry, salesType }
         });
     };

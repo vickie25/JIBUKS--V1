@@ -25,7 +25,7 @@ export default function ContactInformationScreen() {
 
         // Navigate to financial setup
         router.push({
-            pathname: '/financial-setup',
+            pathname: '/business-tabs/financial-setup',
             params: { ...params, address, phoneNumber, email }
         });
     };
