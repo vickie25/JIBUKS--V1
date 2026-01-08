@@ -24,8 +24,10 @@ export default function ContactInformationScreen() {
         console.log({ address, phoneNumber, email });
 
         // Navigate to financial setup
-        // @ts-ignore - Route exists but not in type definitions
-        router.push('/financial-setup');
+        router.push({
+            pathname: '/business-tabs/financial-setup',
+            params: { ...params, address, phoneNumber, email }
+        });
     };
 
     const handleBack = () => {
