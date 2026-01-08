@@ -1,40 +1,42 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { showToast } from '@/utils/toast';
 
 const { width } = Dimensions.get('window');
 
-export default function ContactInformationScreen() {
+export default function TaxAndInvoiceScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const [address, setAddress] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [email, setEmail] = useState('');
+    const [vatChoice, setVatChoice] = useState('yes'); // 'yes' or 'no'
+    const [styleChoice, setStyleChoice] = useState('simple'); // 'simple' or 'detailed'
 
     const handleContinue = () => {
-        if (!phoneNumber.trim()) {
-            showToast.error('Error', 'Please enter your phone number');
-            return;
-        }
-
-        // Save contact information logic would go here
-        console.log({ address, phoneNumber, email });
-
-        // Navigate to financial setup
-        // @ts-ignore - Route exists but not in type definitions
-        router.push('/financial-setup');
+        console.log({ vatChoice, styleChoice });
+        // Navigate to success screen with all collected data
+        router.push({
+            pathname: '/business-onboarding-success',
+            params: { ...params, vatChoice, styleChoice }
+        });
     };
 
     const handleBack = () => {
         router.back();
     };
 
+    const RadioButton = ({ selected, onPress, label }: { selected: boolean; onPress: () => void; label: string }) => (
+        <TouchableOpacity style={styles.radioContainer} onPress={onPress} activeOpacity={0.7}>
+            <View style={[styles.radioOuter, selected && styles.radioOuterSelected]}>
+                {selected && <View style={styles.radioInner} />}
+            </View>
+            <Text style={[styles.radioLabel, selected && styles.radioLabelSelected]}>{label}</Text>
+        </TouchableOpacity>
+    );
+
     return (
         <View style={styles.container}>
-            {/* Blue Header Section */}
+            {/* Header */}
             <LinearGradient
                 colors={['#1e3a8a', '#2563eb']}
                 style={styles.header}
@@ -43,51 +45,42 @@ export default function ContactInformationScreen() {
                     <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={28} color="#f59e0b" />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Contact Information</Text>
+                    <Text style={styles.headerTitle}>Tax and Invoicing</Text>
                     <View style={styles.placeholder} />
                 </View>
-                <Text style={styles.subtitle}>How can customers reach you?</Text>
+                <Text style={styles.subtitle}>Set up invoices and tax handling</Text>
             </LinearGradient>
 
-            {/* White Card Section */}
+            {/* Body Card */}
             <ScrollView style={styles.card} showsVerticalScrollIndicator={false}>
 
-                {/* Business Address Input */}
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Business address?</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="123 Salon Street, Nairobi"
-                        placeholderTextColor="#9ca3af"
-                        value={address}
-                        onChangeText={setAddress}
+                {/* VAT Selection */}
+                <View style={styles.section}>
+                    <Text style={styles.question}>Do you charge VAT on your sales?</Text>
+                    <RadioButton
+                        selected={vatChoice === 'yes'}
+                        onPress={() => setVatChoice('yes')}
+                        label="Yes, I charge VAT (16%)"
+                    />
+                    <RadioButton
+                        selected={vatChoice === 'no'}
+                        onPress={() => setVatChoice('no')}
+                        label="No, I don't charge VAT"
                     />
                 </View>
 
-                {/* Phone Number Input */}
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Phone Number *</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="+2547897654389"
-                        placeholderTextColor="#9ca3af"
-                        value={phoneNumber}
-                        onChangeText={setPhoneNumber}
-                        keyboardType="phone-pad"
+                {/* Invoice Style Selection */}
+                <View style={styles.section}>
+                    <Text style={styles.question}>Invoice Style</Text>
+                    <RadioButton
+                        selected={styleChoice === 'simple'}
+                        onPress={() => setStyleChoice('simple')}
+                        label="Simple (basic & clean)"
                     />
-                </View>
-
-                {/* Email Input */}
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Email</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="doris@salon.com"
-                        placeholderTextColor="#9ca3af"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
+                    <RadioButton
+                        selected={styleChoice === 'detailed'}
+                        onPress={() => setStyleChoice('detailed')}
+                        label="Detailed (with terms & details)"
                     />
                 </View>
 
@@ -156,30 +149,53 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: 32,
     },
-    inputGroup: {
-        marginBottom: 20,
+    section: {
+        marginBottom: 32,
     },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
+    question: {
+        fontSize: 18,
+        fontWeight: 'bold',
         color: '#1f2937',
-        marginBottom: 8,
+        marginBottom: 16,
     },
-    input: {
-        backgroundColor: '#f9fafb',
-        borderWidth: 1,
-        borderColor: '#d1d5db',
+    radioContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
+        paddingVertical: 8,
+    },
+    radioOuter: {
+        width: 24,
+        height: 24,
         borderRadius: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
+        borderWidth: 2,
+        borderColor: '#d1d5db',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+    radioOuterSelected: {
+        borderColor: '#2563eb',
+    },
+    radioInner: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: '#2563eb',
+    },
+    radioLabel: {
         fontSize: 16,
+        color: '#4b5563',
+    },
+    radioLabelSelected: {
         color: '#1f2937',
+        fontWeight: '600',
     },
     helperText: {
         fontSize: 14,
         color: '#6b7280',
-        marginTop: 10,
         textAlign: 'center',
+        marginTop: 20,
         paddingHorizontal: 20,
         lineHeight: 20,
     },
@@ -190,11 +206,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 30,
         marginBottom: 24,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
     },
     continueButtonText: {
         color: '#ffffff',

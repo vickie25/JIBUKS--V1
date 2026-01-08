@@ -45,11 +45,11 @@ export default function RootLayout() {
           <Stack.Screen name="family-dreams" options={{ headerShown: false }} />
           <Stack.Screen name="goal-success" options={{ headerShown: false }} />
           <Stack.Screen name="connect-mobile-money" options={{ headerShown: false }} />
-          <Stack.Screen name="business-tabs/business-onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="business-tabs/contact-information" options={{ headerShown: false }} />
-          <Stack.Screen name="business-tabs/financial-setup" options={{ headerShown: false }} />
-          <Stack.Screen name="business-tabs/tax-and-invoice" options={{ headerShown: false }} />
-          <Stack.Screen name="business-tabs/business-onboarding-success" options={{ headerShown: false }} />
+          <Stack.Screen name="business-onboarding" options={{ headerShown: false }} />
+          <Stack.Screen name="contact-information" options={{ headerShown: false }} />
+          <Stack.Screen name="financial-setup" options={{ headerShown: false }} />
+          <Stack.Screen name="tax-and-invoice" options={{ headerShown: false }} />
+          <Stack.Screen name="business-onboarding-success" options={{ headerShown: false }} />
           <Stack.Screen name="family-settings" options={{ headerShown: false }} />
           <Stack.Screen name="edit-member-permissions" options={{ headerShown: false }} />
           <Stack.Screen name="edit-family-profile" options={{ headerShown: false }} />

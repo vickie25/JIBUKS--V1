@@ -70,7 +70,7 @@ export default function FinancialSetupScreen() {
     const handleContinue = () => {
         // Navigate to tax and invoice
         router.push({
-            pathname: '/business-tabs/tax-and-invoice',
+            pathname: '/tax-and-invoice',
             params: { ...params, currency, yearStart }
         });
     };
