@@ -85,14 +85,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Business Dashboard Tab - Hidden/Removed from bar */}
-      <Tabs.Screen
-        name="business-dashboard"
-        options={{
-          href: null, // Hide from tab bar
-        }}
-      />
-
       {/* Hidden Tabs */}
       <Tabs.Screen
         name="explore"
