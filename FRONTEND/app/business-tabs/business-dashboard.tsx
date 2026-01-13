@@ -132,7 +132,7 @@ export default function BusinessDashboardScreen() {
                     <View style={styles.gridRow}>
                         <GridItem emoji="📈" label="Reports" />
                         <GridItem emoji="📥" label="Income" />
-                        <GridItem emoji="⋮" label="MORE" />
+                        <GridItem emoji="⋮" label="MORE" onPress={() => router.push('/business-tabs/more-business')} />
                     </View>
                 </View>
 
@@ -164,9 +164,9 @@ export default function BusinessDashboardScreen() {
     );
 }
 
-function GridItem({ emoji, label }: { emoji: string; label: string }) {
+function GridItem({ emoji, label, onPress }: { emoji: string; label: string; onPress?: () => void }) {
     return (
-        <TouchableOpacity style={styles.gridItem}>
+        <TouchableOpacity style={styles.gridItem} onPress={onPress} activeOpacity={onPress ? 0.7 : 1}>
             <View style={styles.gridIconCircle}>
                 <Text style={styles.gridEmoji}>{emoji}</Text>
             </View>

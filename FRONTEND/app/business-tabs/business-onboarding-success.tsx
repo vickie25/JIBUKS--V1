@@ -19,7 +19,7 @@ export default function BusinessOnboardingSuccessScreen() {
 
     const handleStart = () => {
         router.replace({
-            pathname: '/(tabs)/business-dashboard',
+            pathname: '/business-tabs/business-dashboard',
             params: {
                 businessName,
                 ownerName: 'Doris' // Default for now as per design

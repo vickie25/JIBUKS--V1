@@ -54,6 +54,9 @@ export default function RootLayout() {
           <Stack.Screen name="business-tabs/financial-setup" options={{ headerShown: false }} />
           <Stack.Screen name="business-tabs/tax-and-invoice" options={{ headerShown: false }} />
           <Stack.Screen name="business-tabs/business-onboarding-success" options={{ headerShown: false }} />
+          <Stack.Screen name="business-tabs/business-dashboard" options={{ headerShown: false }} />
+          <Stack.Screen name="business-tabs/more-business" options={{ headerShown: false }} />
+          <Stack.Screen name="business-tabs/index" options={{ headerShown: false }} />
           <Stack.Screen name="family-settings" options={{ headerShown: false }} />
           <Stack.Screen name="edit-member-permissions" options={{ headerShown: false }} />
           <Stack.Screen name="edit-family-profile" options={{ headerShown: false }} />
