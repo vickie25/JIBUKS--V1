@@ -324,7 +324,7 @@ router.post('/adjustment', async (req, res) => {
             // 3. Create Journal Lines
             if (type === 'IN' || (type === 'ADJUSTMENT' && newQuantity > Number(item.quantity))) {
                 // Increase in inventory
-                // Debit: Inventory Asset
+                // Debit: Inventory Asset (should be 1300 - Finished Goods)
                 await tx.journalLine.create({
                     data: {
                         journalId: journal.id,
@@ -335,7 +335,7 @@ router.post('/adjustment', async (req, res) => {
                     }
                 });
 
-                // Credit: Inventory Adjustment (or COGS)
+                // Credit: Inventory Adjustment or Accounts Payable (using COGS account as default)
                 await tx.journalLine.create({
                     data: {
                         journalId: journal.id,
@@ -346,8 +346,8 @@ router.post('/adjustment', async (req, res) => {
                     }
                 });
             } else if (type === 'OUT' || (type === 'ADJUSTMENT' && newQuantity < Number(item.quantity))) {
-                // Decrease in inventory
-                // Debit: COGS (or Inventory Adjustment)
+                // Decrease in inventory (COGS recognition)
+                // Debit: COGS (should be 5200 - Cost of Goods Sold)
                 await tx.journalLine.create({
                     data: {
                         journalId: journal.id,
@@ -358,7 +358,7 @@ router.post('/adjustment', async (req, res) => {
                     }
                 });
 
-                // Credit: Inventory Asset
+                // Credit: Inventory Asset (should be 1300 - Finished Goods)
                 await tx.journalLine.create({
                     data: {
                         journalId: journal.id,

@@ -69,6 +69,7 @@ model Account {
   description     String?
   parentId        Int?          @map("parent_id")
   isSystem        Boolean       @default(false) @map("is_system") // System accounts can't be deleted
+  isContra        Boolean       @default(false) @map("is_contra") // Contra accounts (negative balances)
   isActive        Boolean       @default(true) @map("is_active")
   currency        String        @default("KES")
   createdAt       DateTime      @default(now()) @map("created_at")
