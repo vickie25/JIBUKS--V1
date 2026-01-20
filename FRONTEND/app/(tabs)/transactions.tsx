@@ -26,7 +26,7 @@ export default function ChequesScreen() {
       id: 2,
       title: 'Track Pending',
       icon: 'time',
-      route: '/cheques',
+      route: '/pending-cheques',
       description: 'View pending cheques',
       color: '#f59e0b',
     },
@@ -53,11 +53,11 @@ export default function ChequesScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Summary Cards */}
         <View style={styles.summarySection}>
-          <View style={styles.summaryCard}>
+          <TouchableOpacity style={styles.summaryCard} onPress={() => router.push('/pending-cheques')}>
             <Ionicons name="time" size={28} color="#f59e0b" />
             <Text style={styles.summaryNumber}>2</Text>
             <Text style={styles.summaryLabel}>Pending</Text>
-          </View>
+          </TouchableOpacity>
           <View style={styles.summaryCard}>
             <Ionicons name="checkmark-circle" size={28} color="#10b981" />
             <Text style={styles.summaryNumber}>5</Text>
@@ -74,11 +74,11 @@ export default function ChequesScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CHEQUE STATUS</Text>
           <View style={styles.statusCard}>
-            <View style={styles.statusRow}>
+            <TouchableOpacity style={styles.statusRow} onPress={() => router.push('/pending-cheques')}>
               <View style={[styles.statusDot, { backgroundColor: '#f59e0b' }]} />
               <Text style={styles.statusLabel}>Pending</Text>
               <Text style={styles.statusValue}>2 cheques</Text>
-            </View>
+            </TouchableOpacity>
             <View style={styles.statusRow}>
               <View style={[styles.statusDot, { backgroundColor: '#10b981' }]} />
               <Text style={styles.statusLabel}>Cleared</Text>
