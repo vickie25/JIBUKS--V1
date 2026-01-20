@@ -168,7 +168,7 @@ export default function ChequesScreen() {
               </View>
 
               <View style={styles.chequeActionsRow}>
-                <TouchableOpacity style={styles.actionBtnOutline}>
+                <TouchableOpacity style={styles.actionBtnOutline} onPress={() => router.push('/receipt')}>
                   <Text style={styles.actionBtnText}>Receipt</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.actionBtnOutline} onPress={() => router.push('/cheque-details')}>
