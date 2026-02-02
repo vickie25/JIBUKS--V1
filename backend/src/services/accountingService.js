@@ -29,250 +29,645 @@ export const FAMILY_COA_TEMPLATE = [
     // ============================================
     // ASSETS (1000-1999)
     // ============================================
+    // Organized by:
+    // - Current Assets (1000-1399) - Liquid within 1 year
+    // - Fixed Assets (1400-1599) - Long-term tangible assets
+    // - Investments (1600-1699) - Long-term financial assets
+    // - Contra-Assets (1700-1799) - Accumulated depreciation
+    //
+    // SUBTYPES:
+    // - cash: Physical cash
+    // - bank: Bank accounts
+    // - mobile_money: M-PESA, Airtel Money
+    // - sacco: Sacco FOSA accounts
+    // - online_wallet: PayPal, Wise
+    // - accounts_receivable: Customer receivables
+    // - other_receivable: Deposits, prepayments
+    // - inventory: Stock for sale
+    // - fixed_asset_vehicles: Cars, motorcycles
+    // - fixed_asset_property: Land, buildings
+    // - fixed_asset_equipment: Machinery, electronics
+    // - fixed_asset_furniture: Office/home furniture
+    // - investment: Stocks, bonds, funds
+    // - contra_asset: Accumulated depreciation
+
+    // ============================================
+    // ASSETS (1000-1999)
+    // ============================================
 
     // ----------------------------------------
-    // 1. CURRENT ASSETS - Cash & Banks (1000-1099)
-    // Used in: Transfer, Expense, Pay Bill, Income screens
+    // 1. CURRENT ASSETS (1000-1399)
     // ----------------------------------------
 
-    // Cash Accounts (1001-1009)
-    { code: '1001', name: 'Cash on Hand (Wallet)', type: 'ASSET', description: 'Physical cash carried daily', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'cash', systemTag: 'CASH' },
-    { code: '1002', name: 'Petty Cash (Home Safe)', type: 'ASSET', description: 'Emergency cash kept at home', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'cash' },
+    // ----------------------------------------
+    // CASH & CASH EQUIVALENTS (1000-1099)
+    // ----------------------------------------
+    { code: '1000', name: 'Cash & Cash Equivalents', type: 'ASSET', description: 'Total physical cash and equivalents', isSystem: true, isContra: false, subtype: 'cash', isParent: true },
 
-    // Mobile Money - M-PESA Family (1010-1019)
-    { code: '1010', name: 'M-PESA (Personal)', type: 'ASSET', description: 'Main wallet for daily spending', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'mobile_money', systemTag: 'MPESA' },
-    { code: '1011', name: 'M-PESA (Business/Till)', type: 'ASSET', description: 'Side-hustle Till number', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money' },
-    { code: '1012', name: 'M-Shwari (Savings)', type: 'ASSET', description: 'Locked savings on SIM card', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money' },
-    { code: '1013', name: 'KCB M-PESA', type: 'ASSET', description: 'Loan/Savings account linked to SIM', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money' },
-    { code: '1014', name: 'Airtel Money', type: 'ASSET', description: 'Alternative mobile wallet', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money' },
-    { code: '1015', name: 'T-Kash (Telkom)', type: 'ASSET', description: 'Alternative mobile wallet', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money' },
+    // Physical Cash (1001-1009)
+    { code: '1001', name: 'Cash on Hand (Wallet)', type: 'ASSET', description: 'Physical cash carried daily', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'cash', systemTag: 'CASH', parentCode: '1000' },
+    { code: '1002', name: 'Petty Cash (Home Safe)', type: 'ASSET', description: 'Emergency cash kept at home', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'cash', parentCode: '1000' },
+    { code: '1003', name: 'Petty Cash (Office)', type: 'ASSET', description: 'Small office expenses cash', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'cash', parentCode: '1000' },
+    { code: '1004', name: 'Cash Register', type: 'ASSET', description: 'Shop/business till cash', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'cash', parentCode: '1000' },
+    { code: '1005', name: 'Undeposited Funds', type: 'ASSET', description: 'Cash received not yet banked', isSystem: true, isContra: false, subtype: 'cash', parentCode: '1000' },
 
-    // Commercial Banks - Tier 1 (1020-1029)
-    { code: '1020', name: 'Equity Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'bank', systemTag: 'BANK' },
-    { code: '1021', name: 'KCB Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1022', name: 'Co-operative Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1023', name: 'NCBA Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1024', name: 'Standard Chartered', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1025', name: 'Absa Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1026', name: 'I&M Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1027', name: 'DTB (Diamond Trust)', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1028', name: 'Stanbic Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
+    // Bank Accounts (1010-1049)
+    { code: '1010', name: 'Commercial Bank Accounts', type: 'ASSET', description: 'Total holdings in commercial banks', isSystem: true, isContra: false, subtype: 'bank', isParent: true },
 
-    // Commercial Banks - Tier 2 (1029-1039)
-    { code: '1029', name: 'Family Bank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1030', name: 'Kingdom Bank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1031', name: 'Postbank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
-    { code: '1032', name: 'Credit Bank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank' },
+    // Tier 1 Banks
+    { code: '1011', name: 'Equity Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'bank', systemTag: 'BANK', parentCode: '1010' },
+    { code: '1012', name: 'KCB Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1013', name: 'Co-operative Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1014', name: 'NCBA Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1015', name: 'Standard Chartered', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1016', name: 'Absa Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1017', name: 'I&M Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1018', name: 'DTB (Diamond Trust)', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1019', name: 'Stanbic Bank', type: 'ASSET', description: 'Tier 1 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    // Tier 2 Banks
+    { code: '1020', name: 'Family Bank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1021', name: 'Kingdom Bank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1022', name: 'Postbank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1023', name: 'Credit Bank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1024', name: 'Bank of Africa', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1025', name: 'Prime Bank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1026', name: 'HFC (Housing Finance)', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
+    { code: '1027', name: 'Sidian Bank', type: 'ASSET', description: 'Tier 2 Bank', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'bank', parentCode: '1010' },
 
-    // Saccos - FOSA (1040-1049)
-    { code: '1040', name: 'Stima Sacco (FOSA)', type: 'ASSET', description: 'Withdrawable Sacco Savings', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco' },
-    { code: '1041', name: 'Police Sacco (FOSA)', type: 'ASSET', description: 'Withdrawable Sacco Savings', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco' },
-    { code: '1042', name: 'Mwalimu National (FOSA)', type: 'ASSET', description: 'Withdrawable Sacco Savings', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco' },
-    { code: '1043', name: 'Harambee Sacco (FOSA)', type: 'ASSET', description: 'Withdrawable Sacco Savings', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco' },
-    { code: '1044', name: 'Hazina Sacco (FOSA)', type: 'ASSET', description: 'Withdrawable Sacco Savings', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco' },
+    // Mobile Money (1050-1069)
+    { code: '1050', name: 'Mobile Money Wallets', type: 'ASSET', description: 'Total mobile money holdings', isSystem: true, isContra: false, subtype: 'mobile_money', isParent: true },
+    { code: '1051', name: 'M-PESA (Personal)', type: 'ASSET', description: 'Main wallet for daily spending', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'mobile_money', systemTag: 'MPESA', parentCode: '1050' },
+    { code: '1052', name: 'M-PESA (Business/Till)', type: 'ASSET', description: 'Side-hustle Till number', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money', parentCode: '1050' },
+    { code: '1053', name: 'M-Shwari (Savings)', type: 'ASSET', description: 'Locked savings on SIM card', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money', parentCode: '1050' },
+    { code: '1054', name: 'KCB M-PESA', type: 'ASSET', description: 'Loan/Savings linked to SIM', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money', parentCode: '1050' },
+    { code: '1055', name: 'Airtel Money', type: 'ASSET', description: 'Alternative mobile wallet', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money', parentCode: '1050' },
+    { code: '1056', name: 'T-Kash (Telkom)', type: 'ASSET', description: 'Alternative mobile wallet', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money', parentCode: '1050' },
+    { code: '1057', name: 'Equitel', type: 'ASSET', description: 'Equity Bank mobile money', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'mobile_money', parentCode: '1050' },
 
-    // Online Wallets & Crypto (1050-1059)
-    { code: '1050', name: 'PayPal', type: 'ASSET', description: 'For online work/freelancing', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'online_wallet' },
-    { code: '1051', name: 'Wise (TransferWise)', type: 'ASSET', description: 'For international transfers', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'online_wallet' },
-    { code: '1052', name: 'Binance Wallet (USDT)', type: 'ASSET', description: 'For holding stablecoins', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'crypto' },
+    // Sacco FOSA (1070-1089)
+    { code: '1070', name: 'Sacco Savings (Withdrawable)', type: 'ASSET', description: 'Total withdrawable Sacco savings', isSystem: true, isContra: false, subtype: 'sacco', isParent: true },
+    { code: '1071', name: 'Stima Sacco (FOSA)', type: 'ASSET', description: 'Withdrawable Sacco Savings', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco', parentCode: '1070' },
+    { code: '1072', name: 'Mwalimu National (FOSA)', type: 'ASSET', description: 'Teachers Sacco', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco', parentCode: '1070' },
+    { code: '1073', name: 'Kenya Police Sacco (FOSA)', type: 'ASSET', description: 'Police Sacco', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco', parentCode: '1070' },
+    { code: '1074', name: 'Harambee Sacco (FOSA)', type: 'ASSET', description: 'Government Sacco', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco', parentCode: '1070' },
+    { code: '1075', name: 'Hazina Sacco (FOSA)', type: 'ASSET', description: 'Hazina Sacco', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco', parentCode: '1070' },
+    { code: '1076', name: 'Unaitas Sacco (FOSA)', type: 'ASSET', description: 'Unaitas Sacco', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco', parentCode: '1070' },
+    { code: '1077', name: 'Kenya Bankers Sacco', type: 'ASSET', description: 'Bankers Sacco', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'sacco', parentCode: '1070' },
 
-    // Special Accounts (1060-1099)
-    { code: '1060', name: 'Undeposited Funds', type: 'ASSET', description: 'Cash received not yet deposited', isSystem: true, isContra: false, subtype: 'cash' },
-    { code: '1070', name: 'Clearing Account', type: 'ASSET', description: 'Temporary clearing account', isSystem: true, isContra: false, subtype: 'other_asset' },
+    // Online Wallets & Crypto (1090-1099)
+    { code: '1090', name: 'Digital Wallets & Crypto', type: 'ASSET', description: 'Total digital assets and wallets', isSystem: true, isContra: false, subtype: 'online_wallet', isParent: true },
+    { code: '1091', name: 'PayPal', type: 'ASSET', description: 'For online work/freelancing', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'online_wallet', parentCode: '1090' },
+    { code: '1092', name: 'Wise (TransferWise)', type: 'ASSET', description: 'For international transfers', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'online_wallet', parentCode: '1090' },
+    { code: '1093', name: 'Skrill', type: 'ASSET', description: 'Online payment wallet', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'online_wallet', parentCode: '1090' },
+    { code: '1094', name: 'Payoneer', type: 'ASSET', description: 'Freelancer payments', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'online_wallet', parentCode: '1090' },
+    { code: '1095', name: 'Binance Wallet', type: 'ASSET', description: 'Crypto exchange wallet', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'crypto', parentCode: '1090' },
+    { code: '1096', name: 'USDT (Tether)', type: 'ASSET', description: 'Stablecoin holdings', isSystem: false, isContra: false, isPaymentEligible: false, subtype: 'crypto', parentCode: '1090' },
 
     // ----------------------------------------
-    // 2. RECEIVABLES - Money Owed TO Family (1200-1299)
-    // Used in: Lending Manager module
+    // ACCOUNTS RECEIVABLE (1100-1149)
     // ----------------------------------------
-    { code: '1200', name: 'Loans to Friends/Family', type: 'ASSET', description: 'Money lent to cousins/friends', isSystem: true, isContra: false, subtype: 'receivable' },
-    { code: '1210', name: 'Salary Arrears', type: 'ASSET', description: 'Work done but not paid yet', isSystem: false, isContra: false, subtype: 'receivable' },
-    { code: '1220', name: 'Rent Security Deposits', type: 'ASSET', description: 'Refundable deposit held by Landlord', isSystem: false, isContra: false, subtype: 'receivable' },
-    { code: '1230', name: 'Utility Deposits', type: 'ASSET', description: 'Deposit held by Kenya Power/Water', isSystem: false, isContra: false, subtype: 'receivable' },
-    { code: '1240', name: 'Prepaid Expenses', type: 'ASSET', description: 'Services paid for but not used yet', isSystem: false, isContra: false, subtype: 'receivable' },
-    { code: '1250', name: 'Accounts Receivable', type: 'ASSET', description: 'Money owed by customers', isSystem: true, isContra: false, subtype: 'ar' },
+    { code: '1100', name: 'Accounts Receivable', type: 'ASSET', description: 'Money owed by customers - Control', isSystem: true, isContra: false, subtype: 'accounts_receivable', isParent: true, systemTag: 'AR' },
+    { code: '1101', name: 'Trade Receivables', type: 'ASSET', description: 'Customer invoices unpaid', isSystem: true, isContra: false, subtype: 'accounts_receivable', parentCode: '1100' },
+    { code: '1102', name: 'Credit Sales Receivable', type: 'ASSET', description: 'Goods sold on credit', isSystem: false, isContra: false, subtype: 'accounts_receivable', parentCode: '1100' },
+    { code: '1103', name: 'Service Receivables', type: 'ASSET', description: 'Services rendered, not paid', isSystem: false, isContra: false, subtype: 'accounts_receivable', parentCode: '1100' },
+    { code: '1110', name: 'Allowance for Doubtful Debts', type: 'ASSET', description: 'Provision for bad debts', isSystem: true, isContra: true, subtype: 'contra_receivable', parentCode: '1100' },
 
     // ----------------------------------------
-    // 3. FIXED ASSETS - Physical Wealth (1500-1599)
-    // Used in: Assets module (Net Worth tracking)
+    // OTHER RECEIVABLES (1150-1199)
     // ----------------------------------------
-
-    // Vehicles (1510-1519)
-    { code: '1510', name: 'Motor Vehicles', type: 'ASSET', description: 'Cars - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-    { code: '1511', name: 'Motorbikes / Boda', type: 'ASSET', description: 'Motorcycles - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-
-    // Real Estate (1520-1529)
-    { code: '1520', name: 'Land (Freehold)', type: 'ASSET', description: 'Land - Appreciates', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-    { code: '1521', name: 'Residential Buildings', type: 'ASSET', description: 'House structure - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-    { code: '1522', name: 'Rental Properties', type: 'ASSET', description: 'Apartments owned - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-    { code: '1523', name: 'Project / Construction WIP', type: 'ASSET', description: 'House under construction', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-
-    // Household Items (1530-1539)
-    { code: '1530', name: 'Furniture & Fittings', type: 'ASSET', description: 'Sofas, Beds, Tables - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-
-    // Electronics (1540-1569)
-    { code: '1540', name: 'Computer Equipment', type: 'ASSET', description: 'Laptops, Desktops - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-    { code: '1550', name: 'Mobile Phones & Tablets', type: 'ASSET', description: 'High-value phones - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-    { code: '1560', name: 'Home Appliances', type: 'ASSET', description: 'Fridges, Washing Machines - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-
-    // Other Fixed Assets (1570-1599)
-    { code: '1570', name: 'Farm Machinery', type: 'ASSET', description: 'Tractors, water pumps - Depreciable', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-    { code: '1580', name: 'Jewelry & Art', type: 'ASSET', description: 'Gold/Art - Usually holds value', isSystem: false, isContra: false, subtype: 'fixed_asset' },
-    { code: '1590', name: 'Livestock (Cows/Goats)', type: 'ASSET', description: 'Biological assets - Reproduce/grow', isSystem: false, isContra: false, subtype: 'biological' },
+    { code: '1150', name: 'Other Receivables', type: 'ASSET', description: 'Other amounts owed - Control', isSystem: true, isContra: false, subtype: 'other_receivable', isParent: true },
+    { code: '1151', name: 'Loans to Friends/Family', type: 'ASSET', description: 'Money lent to individuals', isSystem: true, isContra: false, subtype: 'other_receivable', parentCode: '1150' },
+    { code: '1152', name: 'Staff Loans & Advances', type: 'ASSET', description: 'Salary advances to employees', isSystem: false, isContra: false, subtype: 'other_receivable', parentCode: '1150' },
+    { code: '1153', name: 'Salary Arrears', type: 'ASSET', description: 'Work done but not paid yet', isSystem: false, isContra: false, subtype: 'other_receivable', parentCode: '1150' },
+    { code: '1154', name: 'Rent Security Deposits', type: 'ASSET', description: 'Refundable deposit with landlord', isSystem: false, isContra: false, subtype: 'other_receivable', parentCode: '1150' },
+    { code: '1155', name: 'Utility Deposits', type: 'ASSET', description: 'Deposit with Kenya Power/Water', isSystem: false, isContra: false, subtype: 'other_receivable', parentCode: '1150' },
+    { code: '1156', name: 'Insurance Deposits', type: 'ASSET', description: 'Refundable insurance deposits', isSystem: false, isContra: false, subtype: 'other_receivable', parentCode: '1150' },
+    { code: '1157', name: 'VAT Receivable (Input VAT)', type: 'ASSET', description: 'VAT paid on purchases - 16%', isSystem: true, isContra: false, subtype: 'tax_receivable', parentCode: '1150' },
+    { code: '1158', name: 'WHT Receivable', type: 'ASSET', description: 'Withholding tax to claim', isSystem: false, isContra: false, subtype: 'tax_receivable', parentCode: '1150' },
+    { code: '1159', name: 'Prepaid Expenses', type: 'ASSET', description: 'Services paid in advance', isSystem: false, isContra: false, subtype: 'prepayment', parentCode: '1150' },
+    { code: '1160', name: 'Prepaid Rent', type: 'ASSET', description: 'Rent paid in advance', isSystem: false, isContra: false, subtype: 'prepayment', parentCode: '1150' },
+    { code: '1161', name: 'Prepaid Insurance', type: 'ASSET', description: 'Insurance paid in advance', isSystem: false, isContra: false, subtype: 'prepayment', parentCode: '1150' },
 
     // ----------------------------------------
-    // 4. LONG-TERM INVESTMENTS (1600-1699)
-    // Used in: Assets module (Growing Wealth)
+    // INVENTORY (1200-1299)
     // ----------------------------------------
-    { code: '1610', name: 'Sacco Shares (BOSA)', type: 'ASSET', description: 'Non-withdrawable capital shares', isSystem: false, isContra: false, subtype: 'investment' },
-    { code: '1620', name: 'Money Market Fund (MMF)', type: 'ASSET', description: 'CIC, Britam, Etica, Sanlam, etc.', isSystem: false, isContra: false, subtype: 'investment' },
-    { code: '1630', name: 'Treasury Bonds / Bills', type: 'ASSET', description: 'Government lending', isSystem: false, isContra: false, subtype: 'investment' },
-    { code: '1640', name: 'NSE Stock Shares', type: 'ASSET', description: 'Safaricom, Equity shares, etc.', isSystem: false, isContra: false, subtype: 'investment' },
-    { code: '1650', name: 'Offshore Stocks', type: 'ASSET', description: 'US Stocks (Apple, Tesla)', isSystem: false, isContra: false, subtype: 'investment' },
-    { code: '1660', name: 'Cryptocurrency (Bitcoin/Eth)', type: 'ASSET', description: 'Volatile crypto assets', isSystem: false, isContra: false, subtype: 'investment' },
-    { code: '1670', name: 'Pension Fund / RBA', type: 'ASSET', description: 'Private retirement savings', isSystem: false, isContra: false, subtype: 'investment' },
-    { code: '1680', name: 'Life Insurance (Cash Value)', type: 'ASSET', description: 'Policies with surrender value', isSystem: false, isContra: false, subtype: 'investment' },
+    { code: '1200', name: 'Inventory', type: 'ASSET', description: 'Stock for sale - Control', isSystem: true, isContra: false, subtype: 'inventory', isParent: true },
+
+    // Merchandise Inventory
+    { code: '1201', name: 'Merchandise Inventory', type: 'ASSET', description: 'Goods purchased for resale', isSystem: true, isContra: false, subtype: 'inventory', parentCode: '1200' },
+    { code: '1202', name: 'Finished Goods', type: 'ASSET', description: 'Manufactured products ready for sale', isSystem: false, isContra: false, subtype: 'inventory', parentCode: '1200' },
+    { code: '1203', name: 'Work in Progress (WIP)', type: 'ASSET', description: 'Partially completed products', isSystem: false, isContra: false, subtype: 'inventory_wip', parentCode: '1200' },
+    { code: '1204', name: 'Raw Materials', type: 'ASSET', description: 'Materials for manufacturing', isSystem: false, isContra: false, subtype: 'inventory_raw', parentCode: '1200' },
+    { code: '1205', name: 'Packaging Materials', type: 'ASSET', description: 'Boxes, bags, labels', isSystem: false, isContra: false, subtype: 'inventory_supplies', parentCode: '1200' },
+    { code: '1206', name: 'Supplies Inventory', type: 'ASSET', description: 'Office/shop supplies for use', isSystem: false, isContra: false, subtype: 'inventory_supplies', parentCode: '1200' },
+    { code: '1207', name: 'Fuel Inventory', type: 'ASSET', description: 'Fuel stock (petrol stations)', isSystem: false, isContra: false, subtype: 'inventory', parentCode: '1200' },
+    { code: '1208', name: 'Spare Parts Inventory', type: 'ASSET', description: 'Auto parts, machine parts', isSystem: false, isContra: false, subtype: 'inventory', parentCode: '1200' },
+    { code: '1209', name: 'Food & Beverage Inventory', type: 'ASSET', description: 'Restaurant/bar stock', isSystem: false, isContra: false, subtype: 'inventory', parentCode: '1200' },
+    { code: '1210', name: 'Inventory in Transit', type: 'ASSET', description: 'Goods shipped, not received', isSystem: false, isContra: false, subtype: 'inventory', parentCode: '1200' },
+    { code: '1220', name: 'Inventory Reserve', type: 'ASSET', description: 'Provision for obsolete stock', isSystem: true, isContra: true, subtype: 'contra_inventory', parentCode: '1200' },
+
+    // ========================================
+    // FIXED ASSETS (1300-1599)
+    // ========================================
+
+    // Property, Plant & Equipment Control
+    { code: '1300', name: 'Fixed Assets', type: 'ASSET', description: 'Property, Plant & Equipment - Control', isSystem: true, isContra: false, subtype: 'fixed_asset', isParent: true },
 
     // ----------------------------------------
-    // 5. CONTRA-ASSETS - Accumulated Depreciation (1700-1799)
-    // Used in: Background logic only - NOT shown in user dropdowns
+    // LAND & BUILDINGS (1310-1349)
     // ----------------------------------------
-    { code: '1710', name: 'Accum. Depr - Vehicles', type: 'ASSET', description: 'Linked to 1510 & 1511', isSystem: true, isContra: true, subtype: 'contra_asset' },
-    { code: '1721', name: 'Accum. Depr - Buildings', type: 'ASSET', description: 'Linked to 1521 & 1522', isSystem: true, isContra: true, subtype: 'contra_asset' },
-    { code: '1730', name: 'Accum. Depr - Furniture', type: 'ASSET', description: 'Linked to 1530', isSystem: true, isContra: true, subtype: 'contra_asset' },
-    { code: '1740', name: 'Accum. Depr - Electronics', type: 'ASSET', description: 'Linked to 1540, 1550, 1560', isSystem: true, isContra: true, subtype: 'contra_asset' },
-    { code: '1770', name: 'Accum. Depr - Machinery', type: 'ASSET', description: 'Linked to 1570', isSystem: true, isContra: true, subtype: 'contra_asset' },
+    { code: '1310', name: 'Land & Buildings', type: 'ASSET', description: 'Real estate assets - Control', isSystem: true, isContra: false, subtype: 'fixed_asset_property', isParent: true, parentCode: '1300' },
+    { code: '1311', name: 'Land (Freehold)', type: 'ASSET', description: 'Land - Does not depreciate', isSystem: false, isContra: false, subtype: 'fixed_asset_property', parentCode: '1310' },
+    { code: '1312', name: 'Land (Leasehold)', type: 'ASSET', description: 'Leased land - Amortizes', isSystem: false, isContra: false, subtype: 'fixed_asset_property', parentCode: '1310' },
+    { code: '1313', name: 'Residential Buildings', type: 'ASSET', description: 'House/home structure', isSystem: false, isContra: false, subtype: 'fixed_asset_property', parentCode: '1310' },
+    { code: '1314', name: 'Commercial Buildings', type: 'ASSET', description: 'Office/shop buildings', isSystem: false, isContra: false, subtype: 'fixed_asset_property', parentCode: '1310' },
+    { code: '1315', name: 'Rental Properties', type: 'ASSET', description: 'Apartments for rent', isSystem: false, isContra: false, subtype: 'fixed_asset_property', parentCode: '1310' },
+    { code: '1316', name: 'Farm/Agricultural Land', type: 'ASSET', description: 'Farming land', isSystem: false, isContra: false, subtype: 'fixed_asset_property', parentCode: '1310' },
+    { code: '1317', name: 'Construction WIP', type: 'ASSET', description: 'Building under construction', isSystem: false, isContra: false, subtype: 'fixed_asset_wip', parentCode: '1310' },
+    { code: '1318', name: 'Land Improvements', type: 'ASSET', description: 'Fencing, landscaping, paving', isSystem: false, isContra: false, subtype: 'fixed_asset_property', parentCode: '1310' },
+    { code: '1319', name: 'Accum. Depr - Buildings', type: 'ASSET', description: 'Buildings depreciation', isSystem: true, isContra: true, subtype: 'contra_asset', parentCode: '1310' },
+
+    // ----------------------------------------
+    // VEHICLES & TRANSPORT (1350-1389)
+    // ----------------------------------------
+    { code: '1350', name: 'Vehicles & Transport', type: 'ASSET', description: 'Transport assets - Control', isSystem: true, isContra: false, subtype: 'fixed_asset_vehicles', isParent: true, parentCode: '1300' },
+    { code: '1351', name: 'Motor Vehicles - Cars', type: 'ASSET', description: 'Personal/company cars', isSystem: false, isContra: false, subtype: 'fixed_asset_vehicles', parentCode: '1350' },
+    { code: '1352', name: 'Motor Vehicles - SUVs', type: 'ASSET', description: 'SUVs, 4x4 vehicles', isSystem: false, isContra: false, subtype: 'fixed_asset_vehicles', parentCode: '1350' },
+    { code: '1353', name: 'Trucks & Lorries', type: 'ASSET', description: 'Commercial trucks', isSystem: false, isContra: false, subtype: 'fixed_asset_vehicles', parentCode: '1350' },
+    { code: '1354', name: 'Buses & Matatus', type: 'ASSET', description: 'PSV vehicles', isSystem: false, isContra: false, subtype: 'fixed_asset_vehicles', parentCode: '1350' },
+    { code: '1355', name: 'Motorcycles / Boda', type: 'ASSET', description: 'Motorbikes, scooters', isSystem: false, isContra: false, subtype: 'fixed_asset_vehicles', parentCode: '1350' },
+    { code: '1356', name: 'Trailers', type: 'ASSET', description: 'Cargo trailers', isSystem: false, isContra: false, subtype: 'fixed_asset_vehicles', parentCode: '1350' },
+    { code: '1357', name: 'Boats & Water Vessels', type: 'ASSET', description: 'Boats, fishing vessels', isSystem: false, isContra: false, subtype: 'fixed_asset_vehicles', parentCode: '1350' },
+    { code: '1359', name: 'Accum. Depr - Vehicles', type: 'ASSET', description: 'Vehicle depreciation', isSystem: true, isContra: true, subtype: 'contra_asset', parentCode: '1350' },
+
+    // ----------------------------------------
+    // FURNITURE & FIXTURES (1390-1419)
+    // ----------------------------------------
+    { code: '1390', name: 'Furniture & Fixtures', type: 'ASSET', description: 'Furniture assets - Control', isSystem: true, isContra: false, subtype: 'fixed_asset_furniture', isParent: true, parentCode: '1300' },
+    { code: '1391', name: 'Office Furniture', type: 'ASSET', description: 'Desks, chairs, cabinets', isSystem: false, isContra: false, subtype: 'fixed_asset_furniture', parentCode: '1390' },
+    { code: '1392', name: 'Home Furniture', type: 'ASSET', description: 'Sofas, beds, tables', isSystem: false, isContra: false, subtype: 'fixed_asset_furniture', parentCode: '1390' },
+    { code: '1393', name: 'Shop Fittings', type: 'ASSET', description: 'Display units, shelving', isSystem: false, isContra: false, subtype: 'fixed_asset_furniture', parentCode: '1390' },
+    { code: '1394', name: 'Restaurant Furniture', type: 'ASSET', description: 'Tables, chairs, counters', isSystem: false, isContra: false, subtype: 'fixed_asset_furniture', parentCode: '1390' },
+    { code: '1399', name: 'Accum. Depr - Furniture', type: 'ASSET', description: 'Furniture depreciation', isSystem: true, isContra: true, subtype: 'contra_asset', parentCode: '1390' },
+
+    // ----------------------------------------
+    // EQUIPMENT & MACHINERY (1420-1469)
+    // ----------------------------------------
+    { code: '1420', name: 'Equipment & Machinery', type: 'ASSET', description: 'Equipment assets - Control', isSystem: true, isContra: false, subtype: 'fixed_asset_equipment', isParent: true, parentCode: '1300' },
+    { code: '1421', name: 'Computer Equipment', type: 'ASSET', description: 'Laptops, desktops, servers', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1422', name: 'Mobile Phones & Tablets', type: 'ASSET', description: 'High-value phones', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1423', name: 'Printers & Copiers', type: 'ASSET', description: 'Office printing equipment', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1424', name: 'Home Appliances', type: 'ASSET', description: 'Fridges, washing machines', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1425', name: 'Kitchen Equipment', type: 'ASSET', description: 'Commercial kitchen equipment', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1426', name: 'Farm Machinery', type: 'ASSET', description: 'Tractors, water pumps', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1427', name: 'Manufacturing Equipment', type: 'ASSET', description: 'Factory machines', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1428', name: 'Medical Equipment', type: 'ASSET', description: 'Clinic/hospital equipment', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1429', name: 'Salon/Spa Equipment', type: 'ASSET', description: 'Beauty equipment', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1430', name: 'Security Equipment', type: 'ASSET', description: 'CCTV, alarms, safes', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1431', name: 'Audio/Visual Equipment', type: 'ASSET', description: 'Speakers, projectors, TVs', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1432', name: 'Power Equipment', type: 'ASSET', description: 'Generators, solar panels', isSystem: false, isContra: false, subtype: 'fixed_asset_equipment', parentCode: '1420' },
+    { code: '1439', name: 'Accum. Depr - Equipment', type: 'ASSET', description: 'Equipment depreciation', isSystem: true, isContra: true, subtype: 'contra_asset', parentCode: '1420' },
+
+    // ----------------------------------------
+    // OTHER FIXED ASSETS (1470-1499)
+    // ----------------------------------------
+    { code: '1470', name: 'Other Fixed Assets', type: 'ASSET', description: 'Miscellaneous assets - Control', isSystem: true, isContra: false, subtype: 'fixed_asset_other', isParent: true, parentCode: '1300' },
+    { code: '1471', name: 'Jewelry & Precious Metals', type: 'ASSET', description: 'Gold, silver, diamonds', isSystem: false, isContra: false, subtype: 'fixed_asset_other', parentCode: '1470' },
+    { code: '1472', name: 'Art & Collectibles', type: 'ASSET', description: 'Paintings, antiques', isSystem: false, isContra: false, subtype: 'fixed_asset_other', parentCode: '1470' },
+    { code: '1473', name: 'Livestock', type: 'ASSET', description: 'Cows, goats, chickens', isSystem: false, isContra: false, subtype: 'biological_asset', parentCode: '1470' },
+    { code: '1474', name: 'Trees & Plantations', type: 'ASSET', description: 'Timber, fruit trees', isSystem: false, isContra: false, subtype: 'biological_asset', parentCode: '1470' },
+    { code: '1475', name: 'Intangible Assets', type: 'ASSET', description: 'Software, patents, licenses', isSystem: false, isContra: false, subtype: 'intangible', parentCode: '1470' },
+    { code: '1476', name: 'Goodwill', type: 'ASSET', description: 'Business acquisition premium', isSystem: false, isContra: false, subtype: 'intangible', parentCode: '1470' },
+    { code: '1479', name: 'Accum. Amort - Intangibles', type: 'ASSET', description: 'Intangible amortization', isSystem: true, isContra: true, subtype: 'contra_asset', parentCode: '1470' },
+
+    // ========================================
+    // INVESTMENTS (1500-1599)
+    // ========================================
+    { code: '1500', name: 'Long-Term Investments', type: 'ASSET', description: 'Investment assets - Control', isSystem: true, isContra: false, subtype: 'investment', isParent: true },
+    { code: '1501', name: 'Sacco Shares (BOSA)', type: 'ASSET', description: 'Non-withdrawable shares', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1502', name: 'Money Market Fund (MMF)', type: 'ASSET', description: 'CIC, Britam, Sanlam funds', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1503', name: 'Treasury Bonds', type: 'ASSET', description: 'Government bonds', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1504', name: 'Treasury Bills', type: 'ASSET', description: 'Short-term government securities', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1505', name: 'NSE Stocks (Kenya)', type: 'ASSET', description: 'Safaricom, Equity shares', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1506', name: 'Offshore Stocks (US/UK)', type: 'ASSET', description: 'Apple, Tesla, Amazon', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1507', name: 'Cryptocurrency Holdings', type: 'ASSET', description: 'Bitcoin, Ethereum', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1508', name: 'Pension Fund (RBA)', type: 'ASSET', description: 'Private retirement savings', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1509', name: 'Life Insurance (Cash Value)', type: 'ASSET', description: 'Policies with surrender value', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1510', name: 'Unit Trusts', type: 'ASSET', description: 'Mutual fund units', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1511', name: 'Corporate Bonds', type: 'ASSET', description: 'Company bonds', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1512', name: 'Real Estate Investment', type: 'ASSET', description: 'REITs, property funds', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1513', name: 'Chama/Group Investments', type: 'ASSET', description: 'Investment group shares', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+    { code: '1514', name: 'Business Investment', type: 'ASSET', description: 'Shares in other businesses', isSystem: false, isContra: false, subtype: 'investment', parentCode: '1500' },
+
+    // Clearing Account
+    { code: '1599', name: 'Clearing Account', type: 'ASSET', description: 'Temporary clearing account', isSystem: true, isContra: false, subtype: 'other_asset' },
+
 
     // ============================================
     // LIABILITIES (2000-2999)
     // ============================================
+    // Organized by:
+    // - Current Liabilities (2000-2499) - Due within 1 year
+    // - Long-Term Liabilities (2500-2999) - Due after 1 year
+    // 
+    // SUBTYPES:
+    // - accounts_payable: Trade payables to suppliers/vendors
+    // - credit_card: Credit card balances
+    // - taxes_payable: Government taxes (excluding VAT)
+    // - vat_payable: Special VAT/Sales Tax account with unique attributes
+    // - payroll_liability: Employee-related payables
+    // - loans_current: Short-term loans due within 1 year
+    // - deferred_revenue: Unearned income/customer deposits
+    // - accrued_expense: Expenses incurred but not yet paid
+    // - loans_long_term: Long-term debt obligations
+    // - other_liability: Miscellaneous liabilities
 
-    // Current Liabilities (2000-2099)
-    { code: '2000', name: 'Credit Card', type: 'LIABILITY', description: 'Credit card balances', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'credit_card' },
-    { code: '2010', name: 'Loans Payable', type: 'LIABILITY', description: 'Personal/business loans', isSystem: true, isContra: false, subtype: 'liabilities' },
-    { code: '2020', name: 'Accounts Payable', type: 'LIABILITY', description: 'Money owed to suppliers', isSystem: true, isContra: false, subtype: 'ap' },
-    { code: '2030', name: 'Mortgage', type: 'LIABILITY', description: 'Home/property loan', isSystem: false, isContra: false, subtype: 'liabilities' },
-    { code: '2040', name: 'M-Shwari Loan', type: 'LIABILITY', description: 'M-Shwari mobile loan', isSystem: false, isContra: false, subtype: 'liabilities' },
-    { code: '2050', name: 'Fuliza Overdraft', type: 'LIABILITY', description: 'M-PESA overdraft', isSystem: false, isContra: false, subtype: 'liabilities' },
-    { code: '2060', name: 'Sacco Loan', type: 'LIABILITY', description: 'Loan from Sacco', isSystem: false, isContra: false, subtype: 'liabilities' },
-    { code: '2070', name: 'Soft Loans (Friends/Family)', type: 'LIABILITY', description: 'Money owed to individuals', isSystem: true, isContra: false, subtype: 'liabilities' },
+    // ----------------------------------------
+    // ACCOUNTS PAYABLE (2000-2049)
+    // Amounts owed to suppliers and vendors
+    // ----------------------------------------
+    { code: '2000', name: 'Accounts Payable', type: 'LIABILITY', description: 'Trade payables - Main control account', isSystem: true, isContra: false, subtype: 'accounts_payable', isParent: true },
+    { code: '2001', name: 'Supplier - General', type: 'LIABILITY', description: 'General supplier payables', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2002', name: 'Supplier - Inventory', type: 'LIABILITY', description: 'Payables for inventory purchases', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2003', name: 'Supplier - Services', type: 'LIABILITY', description: 'Payables for services received', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2004', name: 'Supplier - Utilities', type: 'LIABILITY', description: 'Utility bills payable (Kenya Power, Water)', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2005', name: 'Supplier - Rent', type: 'LIABILITY', description: 'Rent payable to landlord', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2006', name: 'Supplier - Professional Services', type: 'LIABILITY', description: 'Payables to lawyers, accountants, consultants', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2007', name: 'Supplier - Insurance', type: 'LIABILITY', description: 'Insurance premiums payable', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2008', name: 'Supplier - Maintenance & Repairs', type: 'LIABILITY', description: 'Payables for maintenance services', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2009', name: 'Supplier - Marketing & Advertising', type: 'LIABILITY', description: 'Marketing costs payable', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2010', name: 'Supplier - Fuel & Transport', type: 'LIABILITY', description: 'Fuel and transportation payables', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2011', name: 'Supplier - Subscriptions', type: 'LIABILITY', description: 'Software, media subscriptions payable', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
+    { code: '2012', name: 'Supplier - Medical', type: 'LIABILITY', description: 'Medical and healthcare payables', isSystem: false, isContra: false, subtype: 'accounts_payable', parentCode: '2000' },
 
-    // VAT (2500-2599)
-    { code: '2500', name: 'VAT Payable (Output VAT)', type: 'LIABILITY', description: 'VAT collected on sales (16%)', isSystem: true, isContra: false, subtype: 'tax' },
+    // ----------------------------------------
+    // CREDIT CARDS (2050-2099)
+    // Credit card balances and borrowings
+    // ----------------------------------------
+    { code: '2050', name: 'Credit Cards', type: 'LIABILITY', description: 'Credit card liabilities - Control', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'credit_card', isParent: true },
+    { code: '2051', name: 'Visa Credit Card', type: 'LIABILITY', description: 'Visa card balance', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'credit_card', parentCode: '2050' },
+    { code: '2052', name: 'Mastercard', type: 'LIABILITY', description: 'Mastercard balance', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'credit_card', parentCode: '2050' },
+    { code: '2053', name: 'American Express', type: 'LIABILITY', description: 'Amex card balance', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'credit_card', parentCode: '2050' },
+    { code: '2054', name: 'Store Credit Card', type: 'LIABILITY', description: 'Retail store credit cards', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'credit_card', parentCode: '2050' },
+    { code: '2055', name: 'Business Credit Card', type: 'LIABILITY', description: 'Corporate/business credit card', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'credit_card', parentCode: '2050' },
 
-    // Customer Deposits (2600-2699)
-    { code: '2600', name: 'Customer Deposits', type: 'LIABILITY', description: 'Advance payments from customers', isSystem: true, isContra: false },
-    { code: '2610', name: 'Unearned Revenue', type: 'LIABILITY', description: 'Revenue received in advance', isSystem: false, isContra: false },
+    // ----------------------------------------
+    // TAXES PAYABLE (2100-2199)
+    // Government taxes excluding VAT
+    // ----------------------------------------
+    { code: '2100', name: 'Taxes Payable', type: 'LIABILITY', description: 'Tax liabilities - Control account', isSystem: true, isContra: false, subtype: 'taxes_payable', isParent: true },
 
-    // Payroll Liabilities (2700-2799)
-    { code: '2700', name: 'PAYE Payable', type: 'LIABILITY', description: 'Income tax withheld from employees', isSystem: true, isContra: false, subtype: 'liabilities' },
-    { code: '2710', name: 'NSSF Payable', type: 'LIABILITY', description: 'National Social Security Fund', isSystem: true, isContra: false },
-    { code: '2720', name: 'NHIF Payable', type: 'LIABILITY', description: 'National Hospital Insurance Fund', isSystem: true, isContra: false },
-    { code: '2730', name: 'Housing Levy Payable', type: 'LIABILITY', description: 'Affordable Housing Levy', isSystem: true, isContra: false },
+    // ==> VAT PAYABLE - SPECIAL ACCOUNT <==
+    // This is a UNIQUE account with special attributes for VAT/Sales Tax tracking
+    // It has automatic calculation features and is separate from other taxes
+    { code: '2110', name: 'VAT Payable (Output VAT)', type: 'LIABILITY', description: 'VAT collected on sales - Standard Rate 16%', isSystem: true, isContra: false, subtype: 'vat_payable', isVatAccount: true, vatRate: 16.0, vatType: 'OUTPUT', parentCode: '2100' },
+    { code: '2111', name: 'VAT Payable - Zero Rated', type: 'LIABILITY', description: 'VAT on zero-rated supplies (0%)', isSystem: true, isContra: false, subtype: 'vat_payable', isVatAccount: true, vatRate: 0.0, vatType: 'OUTPUT_ZERO', parentCode: '2100' },
+    { code: '2112', name: 'VAT Payable - Exempt', type: 'LIABILITY', description: 'VAT exempt supplies tracking', isSystem: true, isContra: false, subtype: 'vat_payable', isVatAccount: true, vatRate: 0.0, vatType: 'EXEMPT', parentCode: '2100' },
+
+    // Other Tax Payables
+    { code: '2120', name: 'Income Tax Payable', type: 'LIABILITY', description: 'Corporate/Business income tax', isSystem: true, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2121', name: 'Withholding Tax Payable', type: 'LIABILITY', description: 'WHT on payments to suppliers (5%)', isSystem: true, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2122', name: 'Turnover Tax Payable', type: 'LIABILITY', description: 'TOT for small businesses (1%)', isSystem: true, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2123', name: 'Excise Duty Payable', type: 'LIABILITY', description: 'Excise tax on specific goods', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2124', name: 'Import Duty Payable', type: 'LIABILITY', description: 'Customs duty on imports', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2125', name: 'Property Rates Payable', type: 'LIABILITY', description: 'County/municipal property rates', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2126', name: 'Digital Service Tax Payable', type: 'LIABILITY', description: 'DST on digital services (1.5%)', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2127', name: 'Minimum Tax Payable', type: 'LIABILITY', description: 'Minimum tax on gross turnover', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2128', name: 'Capital Gains Tax Payable', type: 'LIABILITY', description: 'CGT on sale of assets (5%)', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2129', name: 'Stamp Duty Payable', type: 'LIABILITY', description: 'Stamp duty on documents/transfers', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2130', name: 'Presumptive Tax Payable', type: 'LIABILITY', description: 'Tax for matatu/PSV operators', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+    { code: '2131', name: 'Rental Income Tax Payable', type: 'LIABILITY', description: 'Tax on rental income (10%)', isSystem: false, isContra: false, subtype: 'taxes_payable', parentCode: '2100' },
+
+    // ----------------------------------------
+    // PAYROLL LIABILITIES (2200-2299)
+    // Employee-related payables
+    // ----------------------------------------
+    { code: '2200', name: 'Payroll Liabilities', type: 'LIABILITY', description: 'Employee-related payables - Control', isSystem: true, isContra: false, subtype: 'payroll_liability', isParent: true },
+    { code: '2201', name: 'Salaries & Wages Payable', type: 'LIABILITY', description: 'Net salaries owed to employees', isSystem: true, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2202', name: 'PAYE Payable', type: 'LIABILITY', description: 'Pay As You Earn tax withheld', isSystem: true, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2203', name: 'NSSF Payable', type: 'LIABILITY', description: 'National Social Security Fund contributions', isSystem: true, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2204', name: 'NHIF Payable', type: 'LIABILITY', description: 'National Hospital Insurance Fund', isSystem: true, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2205', name: 'Housing Levy Payable', type: 'LIABILITY', description: 'Affordable Housing Levy (1.5%)', isSystem: true, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2206', name: 'NITA Levy Payable', type: 'LIABILITY', description: 'National Industrial Training Authority levy', isSystem: true, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2207', name: 'Pension Fund Contributions Payable', type: 'LIABILITY', description: 'Private pension scheme deductions', isSystem: false, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2208', name: 'Sacco Deductions Payable', type: 'LIABILITY', description: 'Employee Sacco contributions', isSystem: false, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2209', name: 'Union Dues Payable', type: 'LIABILITY', description: 'Trade union deductions', isSystem: false, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2210', name: 'Staff Loans Deductions Payable', type: 'LIABILITY', description: 'Deductions for staff loan repayments', isSystem: false, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2211', name: 'Bonus & Commissions Payable', type: 'LIABILITY', description: 'Accrued bonuses and commissions', isSystem: false, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2212', name: 'Leave Accrual Payable', type: 'LIABILITY', description: 'Accrued annual leave liability', isSystem: false, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2213', name: 'Gratuity Payable', type: 'LIABILITY', description: 'End of contract gratuity accrual', isSystem: false, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+    { code: '2214', name: 'Severance Payable', type: 'LIABILITY', description: 'Redundancy/severance pay liability', isSystem: false, isContra: false, subtype: 'payroll_liability', parentCode: '2200' },
+
+    // ----------------------------------------
+    // SHORT-TERM LOANS (2300-2349)
+    // Loans due within 12 months
+    // ----------------------------------------
+    { code: '2300', name: 'Short-Term Loans', type: 'LIABILITY', description: 'Loans due within 1 year - Control', isSystem: true, isContra: false, subtype: 'loans_current', isParent: true },
+    { code: '2301', name: 'Bank Overdraft', type: 'LIABILITY', description: 'Bank overdraft facility', isSystem: true, isContra: false, isPaymentEligible: true, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2302', name: 'M-Shwari Loan', type: 'LIABILITY', description: 'M-Shwari mobile money loan', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2303', name: 'Fuliza Overdraft', type: 'LIABILITY', description: 'M-PESA Fuliza overdraft', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2304', name: 'KCB M-PESA Loan', type: 'LIABILITY', description: 'KCB mobile loan facility', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2305', name: 'Tala Loan', type: 'LIABILITY', description: 'Tala digital loan', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2306', name: 'Branch Loan', type: 'LIABILITY', description: 'Branch digital loan', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2307', name: 'Zenka Loan', type: 'LIABILITY', description: 'Zenka mobile loan', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2308', name: 'Hustle Loan', type: 'LIABILITY', description: 'Safaricom Hustle loan', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2309', name: 'Timiza Loan', type: 'LIABILITY', description: 'Absa Timiza mobile loan', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2310', name: 'Family/Friends Loan - Short Term', type: 'LIABILITY', description: 'Informal loans from family/friends', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2311', name: 'Chama/Group Loan', type: 'LIABILITY', description: 'Loan from investment group/chama', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2312', name: 'Short-Term Bank Loan', type: 'LIABILITY', description: 'Bank loan due within 1 year', isSystem: true, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2313', name: 'Trade Finance Facility', type: 'LIABILITY', description: 'Short-term trade financing', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2314', name: 'Invoice Financing', type: 'LIABILITY', description: 'Advance against receivables', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+    { code: '2315', name: 'Lipa Later Facility', type: 'LIABILITY', description: 'Buy now pay later obligations', isSystem: false, isContra: false, subtype: 'loans_current', parentCode: '2300' },
+
+    // ----------------------------------------
+    // DEFERRED REVENUE (2350-2399)
+    // Advance payments and unearned income
+    // ----------------------------------------
+    { code: '2350', name: 'Deferred Revenue', type: 'LIABILITY', description: 'Unearned income - Control', isSystem: true, isContra: false, subtype: 'deferred_revenue', isParent: true },
+    { code: '2351', name: 'Customer Deposits', type: 'LIABILITY', description: 'Advance deposits from customers', isSystem: true, isContra: false, subtype: 'deferred_revenue', parentCode: '2350' },
+    { code: '2352', name: 'Unearned Service Revenue', type: 'LIABILITY', description: 'Prepaid services not yet delivered', isSystem: false, isContra: false, subtype: 'deferred_revenue', parentCode: '2350' },
+    { code: '2353', name: 'Subscription Revenue Deferred', type: 'LIABILITY', description: 'Prepaid subscription income', isSystem: false, isContra: false, subtype: 'deferred_revenue', parentCode: '2350' },
+    { code: '2354', name: 'Rent Received in Advance', type: 'LIABILITY', description: 'Prepaid rent from tenants', isSystem: false, isContra: false, subtype: 'deferred_revenue', parentCode: '2350' },
+    { code: '2355', name: 'Insurance Premium Advance', type: 'LIABILITY', description: 'Insurance premiums received in advance', isSystem: false, isContra: false, subtype: 'deferred_revenue', parentCode: '2350' },
+    { code: '2356', name: 'Retainer Fees Deferred', type: 'LIABILITY', description: 'Professional retainer fees in advance', isSystem: false, isContra: false, subtype: 'deferred_revenue', parentCode: '2350' },
+    { code: '2357', name: 'Gift Card Liability', type: 'LIABILITY', description: 'Unredeemed gift cards/vouchers', isSystem: false, isContra: false, subtype: 'deferred_revenue', parentCode: '2350' },
+    { code: '2358', name: 'Loyalty Points Liability', type: 'LIABILITY', description: 'Unredeemed customer loyalty points', isSystem: false, isContra: false, subtype: 'deferred_revenue', parentCode: '2350' },
+
+    // ----------------------------------------
+    // ACCRUED EXPENSES (2400-2449)
+    // Expenses incurred but not yet paid
+    // ----------------------------------------
+    { code: '2400', name: 'Accrued Expenses', type: 'LIABILITY', description: 'Expenses incurred but not paid - Control', isSystem: true, isContra: false, subtype: 'accrued_expense', isParent: true },
+    { code: '2401', name: 'Accrued Interest Expense', type: 'LIABILITY', description: 'Interest expense not yet paid', isSystem: true, isContra: false, subtype: 'accrued_expense', parentCode: '2400' },
+    { code: '2402', name: 'Accrued Rent Expense', type: 'LIABILITY', description: 'Rent expense not yet paid', isSystem: false, isContra: false, subtype: 'accrued_expense', parentCode: '2400' },
+    { code: '2403', name: 'Accrued Utilities', type: 'LIABILITY', description: 'Utility bills not yet received/paid', isSystem: false, isContra: false, subtype: 'accrued_expense', parentCode: '2400' },
+    { code: '2404', name: 'Accrued Professional Fees', type: 'LIABILITY', description: 'Legal/accounting fees incurred not paid', isSystem: false, isContra: false, subtype: 'accrued_expense', parentCode: '2400' },
+    { code: '2405', name: 'Accrued Audit Fees', type: 'LIABILITY', description: 'Audit fees for year-end', isSystem: false, isContra: false, subtype: 'accrued_expense', parentCode: '2400' },
+    { code: '2406', name: 'Accrued Insurance', type: 'LIABILITY', description: 'Insurance expense not yet paid', isSystem: false, isContra: false, subtype: 'accrued_expense', parentCode: '2400' },
+    { code: '2407', name: 'Accrued Warranty Expense', type: 'LIABILITY', description: 'Estimated warranty claims liability', isSystem: false, isContra: false, subtype: 'accrued_expense', parentCode: '2400' },
+    { code: '2408', name: 'Accrued Repairs & Maintenance', type: 'LIABILITY', description: 'Maintenance costs incurred not paid', isSystem: false, isContra: false, subtype: 'accrued_expense', parentCode: '2400' },
+
+    // ----------------------------------------
+    // OTHER CURRENT LIABILITIES (2450-2499)
+    // Miscellaneous short-term obligations
+    // ----------------------------------------
+    { code: '2450', name: 'Other Current Liabilities', type: 'LIABILITY', description: 'Miscellaneous current liabilities - Control', isSystem: true, isContra: false, subtype: 'other_liability', isParent: true },
+    { code: '2451', name: 'Dividends Payable', type: 'LIABILITY', description: 'Declared dividends not yet paid', isSystem: false, isContra: false, subtype: 'other_liability', parentCode: '2450' },
+    { code: '2452', name: 'Current Portion of Long-Term Debt', type: 'LIABILITY', description: 'LT debt due within 12 months', isSystem: true, isContra: false, subtype: 'other_liability', parentCode: '2450' },
+    { code: '2453', name: 'Director Loans Payable', type: 'LIABILITY', description: 'Amounts owed to directors', isSystem: false, isContra: false, subtype: 'other_liability', parentCode: '2450' },
+    { code: '2454', name: 'Related Party Payables', type: 'LIABILITY', description: 'Amounts owed to related parties', isSystem: false, isContra: false, subtype: 'other_liability', parentCode: '2450' },
+    { code: '2455', name: 'Deposits Held', type: 'LIABILITY', description: 'Security deposits from tenants/customers', isSystem: false, isContra: false, subtype: 'other_liability', parentCode: '2450' },
+    { code: '2456', name: 'Suspense Account - Liability', type: 'LIABILITY', description: 'Temporary holding for unclassified items', isSystem: true, isContra: false, subtype: 'other_liability', parentCode: '2450' },
+
+    // ============================================
+    // LONG-TERM LIABILITIES (2500-2999)
+    // Obligations due after 1 year
+    // ============================================
+
+    // ----------------------------------------
+    // LONG-TERM LOANS (2500-2599)
+    // Bank and institutional loans
+    // ----------------------------------------
+    { code: '2500', name: 'Long-Term Loans', type: 'LIABILITY', description: 'Loans due after 1 year - Control', isSystem: true, isContra: false, subtype: 'loans_long_term', isParent: true },
+    { code: '2501', name: 'Bank Term Loan', type: 'LIABILITY', description: 'Long-term bank loan facility', isSystem: true, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2502', name: 'Mortgage Loan', type: 'LIABILITY', description: 'Home/property mortgage', isSystem: true, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2503', name: 'Asset Finance Loan', type: 'LIABILITY', description: 'Vehicle/equipment financing', isSystem: false, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2504', name: 'Sacco Loan', type: 'LIABILITY', description: 'Long-term Sacco loan', isSystem: false, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2505', name: 'Microfinance Loan', type: 'LIABILITY', description: 'Loan from MFI institution', isSystem: false, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2506', name: 'Hire Purchase Liability', type: 'LIABILITY', description: 'HP agreement obligations', isSystem: false, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2507', name: 'Lease Liability', type: 'LIABILITY', description: 'Finance lease obligations (IFRS 16)', isSystem: false, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2508', name: 'Development Finance Loan', type: 'LIABILITY', description: 'Loan from development finance institution', isSystem: false, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2509', name: 'Family/Friends Loan - Long Term', type: 'LIABILITY', description: 'Informal long-term loans', isSystem: false, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+    { code: '2510', name: 'Government Loan/Grant', type: 'LIABILITY', description: 'Youth/SME fund loans', isSystem: false, isContra: false, subtype: 'loans_long_term', parentCode: '2500' },
+
+    // ----------------------------------------
+    // BONDS & DEBENTURES (2600-2649)
+    // Debt securities (for larger businesses)
+    // ----------------------------------------
+    { code: '2600', name: 'Bonds & Debentures', type: 'LIABILITY', description: 'Debt securities - Control', isSystem: true, isContra: false, subtype: 'bonds', isParent: true },
+    { code: '2601', name: 'Corporate Bonds Payable', type: 'LIABILITY', description: 'Issued corporate bonds', isSystem: false, isContra: false, subtype: 'bonds', parentCode: '2600' },
+    { code: '2602', name: 'Debentures Payable', type: 'LIABILITY', description: 'Issued debentures', isSystem: false, isContra: false, subtype: 'bonds', parentCode: '2600' },
+    { code: '2603', name: 'Commercial Paper', type: 'LIABILITY', description: 'Short-term debt securities', isSystem: false, isContra: false, subtype: 'bonds', parentCode: '2600' },
+
+    // ----------------------------------------
+    // OTHER LONG-TERM LIABILITIES (2700-2799)
+    // Miscellaneous long-term obligations
+    // ----------------------------------------
+    { code: '2700', name: 'Other Long-Term Liabilities', type: 'LIABILITY', description: 'Misc long-term obligations - Control', isSystem: true, isContra: false, subtype: 'other_lt_liability', isParent: true },
+    { code: '2701', name: 'Deferred Tax Liability', type: 'LIABILITY', description: 'Future tax obligations from timing differences', isSystem: true, isContra: false, subtype: 'other_lt_liability', parentCode: '2700' },
+    { code: '2702', name: 'Pension Liability', type: 'LIABILITY', description: 'Defined benefit pension obligations', isSystem: false, isContra: false, subtype: 'other_lt_liability', parentCode: '2700' },
+    { code: '2703', name: 'Provision for Litigation', type: 'LIABILITY', description: 'Potential legal claims/lawsuits', isSystem: false, isContra: false, subtype: 'other_lt_liability', parentCode: '2700' },
+    { code: '2704', name: 'Provision for Restructuring', type: 'LIABILITY', description: 'Expected restructuring costs', isSystem: false, isContra: false, subtype: 'other_lt_liability', parentCode: '2700' },
+    { code: '2705', name: 'Asset Retirement Obligation', type: 'LIABILITY', description: 'Decommissioning costs for assets', isSystem: false, isContra: false, subtype: 'other_lt_liability', parentCode: '2700' },
+    { code: '2706', name: 'Long-Term Deferred Revenue', type: 'LIABILITY', description: 'Unearned income due after 1 year', isSystem: false, isContra: false, subtype: 'other_lt_liability', parentCode: '2700' },
+    { code: '2707', name: 'Security Deposits Held - LT', type: 'LIABILITY', description: 'Long-term tenant/customer deposits', isSystem: false, isContra: false, subtype: 'other_lt_liability', parentCode: '2700' },
+
 
     // ============================================
     // EQUITY (3000-3999)
     // ============================================
-    { code: '3000', name: 'Owner Equity', type: 'EQUITY', description: 'Owner capital / Opening balance', isSystem: true, isContra: false, subtype: 'equity' },
-    { code: '3010', name: 'Retained Earnings', type: 'EQUITY', description: 'Accumulated profits/savings', isSystem: true, isContra: false, subtype: 'equity' },
-    { code: '3020', name: 'Drawings', type: 'EQUITY', description: 'Owner withdrawals', isSystem: false, isContra: true, subtype: 'equity' },
 
     // ============================================
-    // INCOME (4000-4999)
+    // OWNERS' CAPITAL (3000-3049)
+    // Money invested into the business
     // ============================================
+    { code: '3000', name: 'Owners\' Capital & Equity', type: 'EQUITY', description: 'Total capital invested', isSystem: true, isContra: false, subtype: 'equity', isParent: true, systemTag: 'EQUITY' },
 
-    // Personal Income (4000-4099)
-    { code: '4000', name: 'Salary Income', type: 'INCOME', description: 'Employment salary', isSystem: true, isContra: false, subtype: 'income' },
-    { code: '4010', name: 'Business Income', type: 'INCOME', description: 'Side business / freelance', isSystem: true, isContra: false, subtype: 'income' },
-    { code: '4020', name: 'Investment Income', type: 'INCOME', description: 'Dividends, interest', isSystem: true, isContra: false, subtype: 'income' },
-    { code: '4030', name: 'Gift Income', type: 'INCOME', description: 'Monetary gifts received', isSystem: true, isContra: false, subtype: 'income' },
-    { code: '4040', name: 'Rental Income', type: 'INCOME', description: 'Property rental income', isSystem: false, isContra: false, subtype: 'income' },
-    { code: '4050', name: 'Other Income', type: 'INCOME', description: 'Miscellaneous income', isSystem: true, isContra: false, subtype: 'income' },
-
-    // Sales Revenue (4100-4199)
-    { code: '4100', name: 'Product Sales', type: 'INCOME', description: 'Revenue from product sales', isSystem: true, isContra: false },
-    { code: '4110', name: 'Service Sales', type: 'INCOME', description: 'Revenue from service sales', isSystem: true, isContra: false },
-    { code: '4120', name: 'Sales Returns', type: 'INCOME', description: 'Returns and refunds (contra-revenue)', isSystem: true, isContra: true },
-    { code: '4130', name: 'Sales Discounts', type: 'INCOME', description: 'Discounts given (contra-revenue)', isSystem: true, isContra: true },
-
-    // Other Revenue (4200-4299)
-    { code: '4200', name: 'Interest Income', type: 'INCOME', description: 'Interest earned on deposits', isSystem: false, isContra: false },
-    { code: '4210', name: 'Late Fee Income', type: 'INCOME', description: 'Late payment fees from customers', isSystem: false, isContra: false },
+    // Capital Accounts
+    { code: '3001', name: 'Owner\'s Capital (Investment)', type: 'EQUITY', description: 'Initial money invested by owner', isSystem: true, isContra: false, subtype: 'equity', parentCode: '3000' },
+    { code: '3002', name: 'Share Capital', type: 'EQUITY', description: 'Value of shares issued', isSystem: false, isContra: false, subtype: 'equity', parentCode: '3000' },
+    { code: '3003', name: 'Partner A Capital', type: 'EQUITY', description: 'Capital from Partner A', isSystem: false, isContra: false, subtype: 'equity', parentCode: '3000' },
+    { code: '3004', name: 'Partner B Capital', type: 'EQUITY', description: 'Capital from Partner B', isSystem: false, isContra: false, subtype: 'equity', parentCode: '3000' },
+    { code: '3005', name: 'Seed Funding / Investor Capital', type: 'EQUITY', description: 'External investment capital', isSystem: false, isContra: false, subtype: 'equity', parentCode: '3000' },
 
     // ============================================
-    // EXPENSES (6000-6999)
+    // RETAINED EARNINGS & RESERVES (3050-3079)
+    // Profits reinvested in the business
+    // ============================================
+    { code: '3050', name: 'Retained Earnings & Reserves', type: 'EQUITY', description: 'Accumulated profits and reserves', isSystem: true, isContra: false, subtype: 'retained_earnings', isParent: true },
+
+    { code: '3051', name: 'Retained Earnings', type: 'EQUITY', description: 'Accumulated profits from previous years', isSystem: true, isContra: false, subtype: 'retained_earnings', parentCode: '3050' },
+    { code: '3052', name: 'General Reserve', type: 'EQUITY', description: 'Profits set aside for general purpose', isSystem: false, isContra: false, subtype: 'retained_earnings', parentCode: '3050' },
+    { code: '3053', name: 'Asset Revaluation Reserve', type: 'EQUITY', description: 'Gains from asset revaluation', isSystem: false, isContra: false, subtype: 'retained_earnings', parentCode: '3050' },
+    { code: '3054', name: 'Current Year Earnings', type: 'EQUITY', description: 'Profit/Loss for the current year', isSystem: true, isContra: false, subtype: 'retained_earnings', parentCode: '3050' },
+
+    // ============================================
+    // DRAWINGS & DIVIDENDS (3080-3099)
+    // Money taken out by owners (Contra-Equity)
+    // ============================================
+    { code: '3080', name: 'Drawings & Distributions', type: 'EQUITY', description: 'Money withdrawn by owners', isSystem: true, isContra: true, subtype: 'drawings', isParent: true },
+
+    { code: '3081', name: 'Owner\'s Drawings', type: 'EQUITY', description: 'Personal cash withdrawals by owner', isSystem: true, isContra: true, subtype: 'drawings', parentCode: '3080' },
+    { code: '3082', name: 'Dividends Paid', type: 'EQUITY', description: 'Dividends distributed to shareholders', isSystem: false, isContra: true, subtype: 'drawings', parentCode: '3080' },
+    { code: '3083', name: 'Partner A Drawings', type: 'EQUITY', description: 'Withdrawals by Partner A', isSystem: false, isContra: true, subtype: 'drawings', parentCode: '3080' },
+    { code: '3084', name: 'Partner B Drawings', type: 'EQUITY', description: 'Withdrawals by Partner B', isSystem: false, isContra: true, subtype: 'drawings', parentCode: '3080' },
+
+    // ============================================
+    // REVENUE / INCOME (4000-4999)
     // ============================================
 
-    // 6000 - Housing & Utilities
-    { code: '6000', name: 'Housing & Utilities', type: 'EXPENSE', description: 'Parent Category: Housing', isSystem: true, subtype: 'operating_expense' },
-    { code: '6010', name: 'Rent Expense', type: 'EXPENSE', description: 'Monthly rent', parentCode: '6000', subtype: 'operating_expense' },
-    { code: '6020', name: 'Mortgage Interest', type: 'EXPENSE', description: 'Interest portion of mortgage', parentCode: '6000', subtype: 'operating_expense' },
-    { code: '6030', name: 'Property Taxes', type: 'EXPENSE', description: 'Property tax payments', parentCode: '6000', subtype: 'operating_expense' },
-    { code: '6040', name: 'Electricity / Power', type: 'EXPENSE', description: 'Electricity bills', parentCode: '6000', subtype: 'operating_expense' },
-    { code: '6050', name: 'Water & Sewer', type: 'EXPENSE', description: 'Water bills', parentCode: '6000', subtype: 'operating_expense' },
-    { code: '6060', name: 'Internet & Cable', type: 'EXPENSE', description: 'Internet and TV', parentCode: '6000', subtype: 'operating_expense' },
-    { code: '6070', name: 'Home Repairs & Maintenance', type: 'EXPENSE', description: 'Fixes and upkeep', parentCode: '6000', subtype: 'operating_expense' },
-    { code: '6080', name: 'House Cleaning Services', type: 'EXPENSE', description: 'Cleaning help', parentCode: '6000', subtype: 'operating_expense' },
+    // ============================================
+    // OPERATING REVENUE (4000-4199)
+    // Income from core business activities
+    // ============================================
+    { code: '4000', name: 'Operating Revenue', type: 'INCOME', description: 'Total revenue from core operations', isSystem: true, isContra: false, subtype: 'sales_revenue', isParent: true, systemTag: 'REVENUE' },
 
-    // 6100 - Food & Living
-    { code: '6100', name: 'Food & Living', type: 'EXPENSE', description: 'Parent Category: Food', isSystem: true, subtype: 'operating_expense' },
-    { code: '6110', name: 'Groceries', type: 'EXPENSE', description: 'Essential food', parentCode: '6100', subtype: 'operating_expense' },
-    { code: '6120', name: 'Dining Out', type: 'EXPENSE', description: 'Restaurants & delivery', parentCode: '6100', subtype: 'operating_expense' },
-    { code: '6130', name: 'Personal Care', type: 'EXPENSE', description: 'Haircuts, hygiene', parentCode: '6100', subtype: 'operating_expense' },
-    { code: '6140', name: 'Clothing & Shoes', type: 'EXPENSE', description: 'Apparel', parentCode: '6100', subtype: 'operating_expense' },
-    { code: '6150', name: 'Laundry & Dry Cleaning', type: 'EXPENSE', description: 'Cleaning clothes', parentCode: '6100', subtype: 'operating_expense' },
+    // ----------------------------------------
+    // SALES REVENUE (4100-4189)
+    // ----------------------------------------
+    { code: '4100', name: 'Sales Revenue', type: 'INCOME', description: 'Gross sales from goods and services', isSystem: true, isContra: false, subtype: 'sales_revenue', isParent: true, parentCode: '4000' },
+    { code: '4101', name: 'Product Sales', type: 'INCOME', description: 'Sales of physical inventory', isSystem: false, isContra: false, subtype: 'sales_revenue', parentCode: '4100' },
+    { code: '4102', name: 'Service Revenue', type: 'INCOME', description: 'Income from services rendered', isSystem: false, isContra: false, subtype: 'sales_revenue', parentCode: '4100' },
+    { code: '4103', name: 'Subscription Revenue', type: 'INCOME', description: 'Recurring subscription income', isSystem: false, isContra: false, subtype: 'sales_revenue', parentCode: '4100' },
+    { code: '4104', name: 'Project Income', type: 'INCOME', description: 'Revenue from specific contracts/projects', isSystem: false, isContra: false, subtype: 'sales_revenue', parentCode: '4100' },
+    { code: '4105', name: 'Installation Fees', type: 'INCOME', description: 'Charges for setup/installation', isSystem: false, isContra: false, subtype: 'sales_revenue', parentCode: '4100' },
+    { code: '4106', name: 'Consulting Income', type: 'INCOME', description: 'Advisory services revenue', isSystem: false, isContra: false, subtype: 'sales_revenue', parentCode: '4100' },
+    { code: '4107', name: 'Delivery / Shipping Income', type: 'INCOME', description: 'Shipping charges collected from customers', isSystem: false, isContra: false, subtype: 'sales_revenue', parentCode: '4100' },
+    { code: '4108', name: 'Management Fees', type: 'INCOME', description: 'Management fees charged', isSystem: false, isContra: false, subtype: 'sales_revenue', parentCode: '4100' },
 
-    // 6200 - Transportation
-    { code: '6200', name: 'Transportation', type: 'EXPENSE', description: 'Parent Category: Transport', isSystem: true, subtype: 'operating_expense' },
-    { code: '6210', name: 'Fuel / Gas', type: 'EXPENSE', description: 'Fuel for vehicles', parentCode: '6200', subtype: 'operating_expense' },
-    { code: '6220', name: 'Auto Insurance', type: 'EXPENSE', description: 'Car insurance', parentCode: '6200', subtype: 'operating_expense' },
-    { code: '6230', name: 'Car Repairs', type: 'EXPENSE', description: 'Vehicle maintenance', parentCode: '6200', subtype: 'operating_expense' },
-    { code: '6240', name: 'Parking & Tolls', type: 'EXPENSE', description: 'Parking fees', parentCode: '6200', subtype: 'operating_expense' },
-    { code: '6250', name: 'Public Transport / Uber', type: 'EXPENSE', description: 'Bus, taxi, rideshare', parentCode: '6200', subtype: 'operating_expense' },
-    { code: '6260', name: 'Vehicle Registration', type: 'EXPENSE', description: 'Licenses and taxes', parentCode: '6200', subtype: 'operating_expense' },
+    // ----------------------------------------
+    // SALES ADJUSTMENTS (4190-4199)
+    // Contra-Revenue accounts
+    // ----------------------------------------
+    { code: '4190', name: 'Sales Adjustments', type: 'INCOME', description: 'Reductions to gross sales', isSystem: true, isContra: true, subtype: 'sales_contra', isParent: true, parentCode: '4000' },
+    { code: '4191', name: 'Sales Returns', type: 'INCOME', description: 'Goods returned by customers', isSystem: true, isContra: true, subtype: 'sales_contra', parentCode: '4190' },
+    { code: '4192', name: 'Sales Discounts', type: 'INCOME', description: 'Discounts given to customers', isSystem: true, isContra: true, subtype: 'sales_contra', parentCode: '4190' },
+    { code: '4193', name: 'Sales Allowances', type: 'INCOME', description: 'Price reductions for defective goods', isSystem: false, isContra: true, subtype: 'sales_contra', parentCode: '4190' },
 
-    // 6300 - Health & Wellness
-    { code: '6300', name: 'Health & Wellness', type: 'EXPENSE', description: 'Parent Category: Health', isSystem: true, subtype: 'operating_expense' },
-    { code: '6310', name: 'Health Insurance', type: 'EXPENSE', description: 'Premiums', parentCode: '6300', subtype: 'operating_expense' },
-    { code: '6320', name: 'Doctors & Dental', type: 'EXPENSE', description: 'Visits and checkups', parentCode: '6300', subtype: 'operating_expense' },
-    { code: '6330', name: 'Pharmacy', type: 'EXPENSE', description: 'Medicine and drugs', parentCode: '6300', subtype: 'operating_expense' },
-    { code: '6340', name: 'Gym & Fitness', type: 'EXPENSE', description: 'Memberships and gear', parentCode: '6300', subtype: 'operating_expense' },
+    // ============================================
+    // OTHER INCOME (4200-4999)
+    // Non-operating income
+    // ============================================
+    { code: '4200', name: 'Other Income', type: 'INCOME', description: 'Non-operating revenue', isSystem: true, isContra: false, subtype: 'other_income', isParent: true },
 
-    // 6400 - Education & Family
-    { code: '6400', name: 'Education & Family', type: 'EXPENSE', description: 'Parent Category: Family', isSystem: true, subtype: 'operating_expense' },
-    { code: '6410', name: 'School Tuition', type: 'EXPENSE', description: 'Classes and fees', parentCode: '6400', subtype: 'operating_expense' },
-    { code: '6420', name: 'School Supplies', type: 'EXPENSE', description: 'Books and stationery', parentCode: '6400', subtype: 'operating_expense' },
-    { code: '6430', name: 'Childcare / Nanny', type: 'EXPENSE', description: 'Babysitting and help', parentCode: '6400', subtype: 'operating_expense' },
-    { code: '6440', name: 'Activities', type: 'EXPENSE', description: 'Sports, music, hobbies', parentCode: '6400', subtype: 'operating_expense' },
-    { code: '6450', name: 'Pet Care', type: 'EXPENSE', description: 'Vet, food, grooming', parentCode: '6400', subtype: 'operating_expense' },
+    // Financial Income
+    { code: '4210', name: 'Interest Income', type: 'INCOME', description: 'Interest from banks/investments', isSystem: true, isContra: false, subtype: 'other_income', parentCode: '4200' },
+    { code: '4220', name: 'Dividend Income', type: 'INCOME', description: 'Dividends from shares/investments', isSystem: false, isContra: false, subtype: 'other_income', parentCode: '4200' },
+    { code: '4230', name: 'Forex Gain/(Loss)', type: 'INCOME', description: 'Gain on currency exchange', isSystem: false, isContra: false, subtype: 'other_income', parentCode: '4200' },
 
-    // 6500 - Entertainment
-    { code: '6500', name: 'Entertainment', type: 'EXPENSE', description: 'Parent Category: Fun', isSystem: true, subtype: 'operating_expense' },
-    { code: '6510', name: 'Subscriptions', type: 'EXPENSE', description: 'Netflix, Spotify, App services', parentCode: '6500', subtype: 'operating_expense' },
-    { code: '6520', name: 'Movies & Events', type: 'EXPENSE', description: 'Outings and tickets', parentCode: '6500', subtype: 'operating_expense' },
-    { code: '6530', name: 'Hobbies', type: 'EXPENSE', description: 'Personal interests', parentCode: '6500', subtype: 'operating_expense' },
-    { code: '6540', name: 'Travel & Vacation', type: 'EXPENSE', description: 'Trips and holidays', parentCode: '6500', subtype: 'operating_expense' },
+    // Misc Income
+    { code: '4240', name: 'Commission Income', type: 'INCOME', description: 'Commissions received', isSystem: false, isContra: false, subtype: 'other_income', parentCode: '4200' },
+    { code: '4250', name: 'Rental Income', type: 'INCOME', description: 'Income from renting out property', isSystem: false, isContra: false, subtype: 'other_income', parentCode: '4200' },
+    { code: '4260', name: 'Grants & Subsidies', type: 'INCOME', description: 'Government or NGO grants', isSystem: false, isContra: false, subtype: 'other_income', parentCode: '4200' },
+    { code: '4270', name: 'Insurance Claims', type: 'INCOME', description: 'Payouts from insurance claims', isSystem: false, isContra: false, subtype: 'other_income', parentCode: '4200' },
+    { code: '4280', name: 'Late Fee Income', type: 'INCOME', description: 'Fees charged on late payments', isSystem: false, isContra: false, subtype: 'other_income', parentCode: '4200' },
+    { code: '4290', name: 'Miscellaneous Income', type: 'INCOME', description: 'Other minor income sources', isSystem: false, isContra: false, subtype: 'other_income', parentCode: '4200' },
 
-    // 6600 - Financial Fees
-    { code: '6600', name: 'Financial Fees', type: 'EXPENSE', description: 'Parent Category: Fees', isSystem: true, subtype: 'operating_expense' },
-    { code: '6610', name: 'Bank Charges', type: 'EXPENSE', description: 'Service fees', parentCode: '6600', subtype: 'operating_expense' },
-    { code: '6620', name: 'Credit Card Interest', type: 'EXPENSE', description: 'Interest paid', parentCode: '6600', subtype: 'operating_expense' },
-    { code: '6630', name: 'Late Fees', type: 'EXPENSE', description: 'Penalties', parentCode: '6600', subtype: 'operating_expense' },
-    { code: '6640', name: 'M-PESA Charges', type: 'EXPENSE', description: 'Mobile money fees', parentCode: '6600', subtype: 'operating_expense' },
-    { code: '6650', name: 'Bad Debt / Forgiven Loans', type: 'EXPENSE', description: 'Money lent that will not be paid back', parentCode: '6600', subtype: 'operating_expense' },
+    // ============================================
+    // EXPENSES (5000-8999)
+    // ============================================
 
-    // 6700 - Gifts & Donations
-    { code: '6700', name: 'Gifts & Donations', type: 'EXPENSE', description: 'Parent Category: Giving', isSystem: true, subtype: 'operating_expense' },
-    { code: '6710', name: 'Charitable Donations', type: 'EXPENSE', description: 'Church, charity', parentCode: '6700', subtype: 'operating_expense' },
-    { code: '6720', name: 'Family Contributions', type: 'EXPENSE', description: 'Harambees, family support', parentCode: '6700', subtype: 'operating_expense' },
-    { code: '6730', name: 'Gifts Given', type: 'EXPENSE', description: 'Birthday, wedding gifts', parentCode: '6700', subtype: 'operating_expense' },
+    // ============================================
+    // COST OF GOODS SOLD (5000-5999)
+    // Direct costs attributable to the production of goods sold
+    // ============================================
+    { code: '5000', name: 'Cost of Goods Sold (COGS)', type: 'EXPENSE', description: 'Total direct costs of production', isSystem: true, isContra: false, subtype: 'cogs', isParent: true, systemTag: 'COGS' },
+    { code: '5001', name: 'Cost of Sales - Inventory', type: 'EXPENSE', description: 'Cost of items sold from inventory', isSystem: true, isContra: false, subtype: 'cogs', parentCode: '5000' },
+    { code: '5002', name: 'Purchase Price Variance', type: 'EXPENSE', description: 'Difference in standard vs actual cost', isSystem: false, isContra: false, subtype: 'cogs', parentCode: '5000' },
+    { code: '5003', name: 'Freight & Shipping In', type: 'EXPENSE', description: 'Transport costs for purchasing goods', isSystem: false, isContra: false, subtype: 'cogs', parentCode: '5000' },
+    { code: '5004', name: 'Import Duties & Taxes', type: 'EXPENSE', description: 'Customs duties on inventory', isSystem: false, isContra: false, subtype: 'cogs', parentCode: '5000' },
+    { code: '5005', name: 'Packaging Materials COGS', type: 'EXPENSE', description: 'Packaging for sold products', isSystem: false, isContra: false, subtype: 'cogs', parentCode: '5000' },
+    { code: '5006', name: 'Direct Labor', type: 'EXPENSE', description: 'Wages directly related to production', isSystem: false, isContra: false, subtype: 'cogs', parentCode: '5000' },
+    { code: '5007', name: 'Subcontractor Costs', type: 'EXPENSE', description: 'Outsourced production work', isSystem: false, isContra: false, subtype: 'cogs', parentCode: '5000' },
+    { code: '5008', name: 'Merchant Transaction Fees', type: 'EXPENSE', description: 'Direct payment processing costs (Stripe/PDQ)', isSystem: false, isContra: false, subtype: 'cogs', parentCode: '5000' },
+    { code: '5009', name: 'Sales Commissions', type: 'EXPENSE', description: 'Commissions paid on sales', isSystem: false, isContra: false, subtype: 'cogs', parentCode: '5000' },
 
-    // 6900 - Depreciation Expenses (For Assets Module)
-    { code: '6900', name: 'Depreciation Expense', type: 'EXPENSE', description: 'Parent Category: Depreciation', isSystem: true, subtype: 'depreciation' },
-    { code: '6910', name: 'Depreciation - Vehicles', type: 'EXPENSE', description: 'Vehicle depreciation', parentCode: '6900', subtype: 'depreciation' },
-    { code: '6920', name: 'Depreciation - Buildings', type: 'EXPENSE', description: 'Building depreciation', parentCode: '6900', subtype: 'depreciation' },
-    { code: '6930', name: 'Depreciation - Furniture', type: 'EXPENSE', description: 'Furniture depreciation', parentCode: '6900', subtype: 'depreciation' },
-    { code: '6940', name: 'Depreciation - Electronics', type: 'EXPENSE', description: 'Electronics depreciation', parentCode: '6900', subtype: 'depreciation' },
-    { code: '6970', name: 'Depreciation - Machinery', type: 'EXPENSE', description: 'Farm machinery depreciation', parentCode: '6900', subtype: 'depreciation' },
+    // ============================================
+    // OPERATING EXPENSES (6000-7999)
+    // Indirect costs of running the business
+    // ============================================
+    { code: '6000', name: 'Operating Expenses', type: 'EXPENSE', description: 'Total operating expenses', isSystem: true, isContra: false, subtype: 'operating_expense', isParent: true },
+
+    // ----------------------------------------
+    // HOUSING & UTILITIES (6010-6099)
+    // ----------------------------------------
+    { code: '6010', name: 'Housing & Utilities', type: 'EXPENSE', description: 'Rent and facility costs', isSystem: true, isContra: false, subtype: 'operating_expense', isParent: true, parentCode: '6000' },
+    { code: '6011', name: 'Rent Expense', type: 'EXPENSE', description: 'Office/Shop rent', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6010' },
+    { code: '6012', name: 'Electricity / Power', type: 'EXPENSE', description: 'Kenya Power (KPLC) bills', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6010' },
+    { code: '6013', name: 'Water & Sewerage', type: 'EXPENSE', description: 'Water bills', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6010' },
+    { code: '6014', name: 'Internet & Connectivity', type: 'EXPENSE', description: 'Fibre, Wi-Fi, Data', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6010' },
+    { code: '6015', name: 'Security Services', type: 'EXPENSE', description: 'Guards, Alarm monitoring', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6010' },
+    { code: '6016', name: 'Cleaning & Sanitation', type: 'EXPENSE', description: 'Office cleaning, garbage collection', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6010' },
+    { code: '6017', name: 'Repairs & Maintenance (Building)', type: 'EXPENSE', description: 'General facility repairs', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6010' },
+
+    // ----------------------------------------
+    // SALARIES & PAYROLL (6100-6199)
+    // ----------------------------------------
+    { code: '6100', name: 'Salaries & Payroll', type: 'EXPENSE', description: 'Total staff costs', isSystem: true, isContra: false, subtype: 'operating_expense', isParent: true, parentCode: '6000' },
+    { code: '6101', name: 'Staff Salaries', type: 'EXPENSE', description: 'Monthly permanent staff salaries', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+    { code: '6102', name: 'Casual Wages', type: 'EXPENSE', description: 'Daily/Weekly casual labor', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+    { code: '6103', name: 'Director Salaries', type: 'EXPENSE', description: 'Salaries paid to directors', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+    { code: '6104', name: 'Staff Bonuses', type: 'EXPENSE', description: 'Performance bonuses', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+    { code: '6105', name: 'Employer NSSF', type: 'EXPENSE', description: 'Employer pension contribution', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+    { code: '6106', name: 'Employer Housing Levy', type: 'EXPENSE', description: 'Employer portion of housing levy', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+    { code: '6107', name: 'Staff Welfare & Meals', type: 'EXPENSE', description: 'Tea, lunch, staff events', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+    { code: '6108', name: 'Staff Training', type: 'EXPENSE', description: 'Workshops and courses', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+    { code: '6109', name: 'Medical Insurance', type: 'EXPENSE', description: 'Staff health cover', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6100' },
+
+    // ----------------------------------------
+    // OFFICE & ADMIN (6200-6299)
+    // ----------------------------------------
+    { code: '6200', name: 'Office & Admin', type: 'EXPENSE', description: 'General administration', isSystem: true, isContra: false, subtype: 'operating_expense', isParent: true, parentCode: '6000' },
+    { code: '6201', name: 'Printing & Stationery', type: 'EXPENSE', description: 'Paper, ink, pens', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6200' },
+    { code: '6202', name: 'Software Subscriptions', type: 'EXPENSE', description: 'SaaS (Zoom, Slack, Jibuks)', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6200' },
+    { code: '6203', name: 'Licenses & Permits', type: 'EXPENSE', description: 'County council permits', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6200' },
+    { code: '6204', name: 'Telephone & Airtime', type: 'EXPENSE', description: 'Office phone expenses', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6200' },
+    { code: '6205', name: 'Postage & Courier', type: 'EXPENSE', description: 'Delivery fees, stamps', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6200' },
+    { code: '6206', name: 'Small Equipment (< Asset Limit)', type: 'EXPENSE', description: 'Small tools not capitalized', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6200' },
+
+    // ----------------------------------------
+    // SALES & MARKETING (6300-6399)
+    // ----------------------------------------
+    { code: '6300', name: 'Sales & Marketing', type: 'EXPENSE', description: 'Growth contribution costs', isSystem: true, isContra: false, subtype: 'operating_expense', isParent: true, parentCode: '6000' },
+    { code: '6301', name: 'Advertising (Online)', type: 'EXPENSE', description: 'Meta, Google, Instagram Ads', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6300' },
+    { code: '6302', name: 'Advertising (Offline)', type: 'EXPENSE', description: 'Flyers, radio, billboards', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6300' },
+    { code: '6303', name: 'Website Hosting & Domain', type: 'EXPENSE', description: 'Site maintenance', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6300' },
+    { code: '6304', name: 'Branding & Design', type: 'EXPENSE', description: 'Logos, t-shirts, branding', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6300' },
+    { code: '6305', name: 'Business Entertainment', type: 'EXPENSE', description: 'Client lunches/meetings', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6300' },
+
+    // ----------------------------------------
+    // TRANSPORT & TRAVEL (6400-6499)
+    // ----------------------------------------
+    { code: '6400', name: 'Transport & Travel', type: 'EXPENSE', description: 'Movement costs', isSystem: true, isContra: false, subtype: 'operating_expense', isParent: true, parentCode: '6000' },
+    { code: '6401', name: 'Fuel & Oil', type: 'EXPENSE', description: 'Petrol/Diesel for vehicles', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6400' },
+    { code: '6402', name: 'Public Transport / Fare', type: 'EXPENSE', description: 'Matatu, bus fare', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6400' },
+    { code: '6403', name: 'Taxi / Uber / Bolt', type: 'EXPENSE', description: 'Ride hailing services', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6400' },
+    { code: '6404', name: 'Parking & Tolls', type: 'EXPENSE', description: 'Parking fees, Expressway', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6400' },
+    { code: '6405', name: 'Vehicle Repairs & Service', type: 'EXPENSE', description: 'Mechanic costs', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6400' },
+    { code: '6406', name: 'Vehicle Insurance', type: 'EXPENSE', description: 'Comprehensive/TPO cover', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6400' },
+    { code: '6407', name: 'Accommodation & Meals (Travel)', type: 'EXPENSE', description: 'Hotel stays during travel', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6400' },
+
+    // ----------------------------------------
+    // FINANCIAL & PROFESSIONAL (6500-6599)
+    // ----------------------------------------
+    { code: '6500', name: 'Financial & Professional', type: 'EXPENSE', description: 'Bank and legal fees', isSystem: true, isContra: false, subtype: 'operating_expense', isParent: true, parentCode: '6000' },
+    { code: '6501', name: 'Bank Service Charges', type: 'EXPENSE', description: 'Monthly ledger fees', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6500' },
+    { code: '6502', name: 'M-PESA / Transaction Fees', type: 'EXPENSE', description: 'Sending/withdrawal charges', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6500' },
+    { code: '6503', name: 'Legal Fees', type: 'EXPENSE', description: 'Lawyer charges', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6500' },
+    { code: '6504', name: 'Accounting & Audit Fees', type: 'EXPENSE', description: 'Bookkeeping/Audit services', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6500' },
+    { code: '6505', name: 'Consultancy Fees', type: 'EXPENSE', description: 'Professional advice', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6500' },
+    { code: '6506', name: 'Interest Expense', type: 'EXPENSE', description: 'Interest on loans', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6500' },
+    { code: '6507', name: 'Bad Debts Expense', type: 'EXPENSE', description: 'Written off receivables', isSystem: false, isContra: false, subtype: 'operating_expense', parentCode: '6500' },
+
+    // ----------------------------------------
+    // DEPRECIATION & AMORTIZATION (6900-6999)
+    // ----------------------------------------
+    { code: '6900', name: 'Depreciation & Amortization', type: 'EXPENSE', description: 'Non-cash asset costs', isSystem: true, isContra: false, subtype: 'depreciation', isParent: true, parentCode: '6000' },
+    { code: '6910', name: 'Depreciation - Buildings', type: 'EXPENSE', description: 'Expense', isSystem: true, isContra: false, subtype: 'depreciation', parentCode: '6900' },
+    { code: '6920', name: 'Depreciation - Vehicles', type: 'EXPENSE', description: 'Expense', isSystem: true, isContra: false, subtype: 'depreciation', parentCode: '6900' },
+    { code: '6930', name: 'Depreciation - Furniture', type: 'EXPENSE', description: 'Expense', isSystem: true, isContra: false, subtype: 'depreciation', parentCode: '6900' },
+    { code: '6940', name: 'Depreciation - Equipment', type: 'EXPENSE', description: 'Expense', isSystem: true, isContra: false, subtype: 'depreciation', parentCode: '6900' },
+    { code: '6950', name: 'Amortization - Intangibles', type: 'EXPENSE', description: 'Expense', isSystem: true, isContra: false, subtype: 'depreciation', parentCode: '6900' },
+
+    // ============================================
+    // OTHER EXPENSES (8000-8999)
+    // Non-operating expenses
+    // ============================================
+    { code: '8000', name: 'Other Expenses', type: 'EXPENSE', description: 'Non-operating expenses', isSystem: true, isContra: false, subtype: 'other_expense', isParent: true },
+    { code: '8010', name: 'Loss on Asset Disposal', type: 'EXPENSE', description: 'Loss when selling asset', isSystem: true, isContra: false, subtype: 'other_expense', parentCode: '8000' },
+    { code: '8020', name: 'Fines & Penalties', type: 'EXPENSE', description: 'KRA/Traffic fines (Not deductible)', isSystem: false, isContra: false, subtype: 'other_expense', parentCode: '8000' },
+    { code: '8030', name: 'Charitable Donations', type: 'EXPENSE', description: 'Donations/CSR', isSystem: false, isContra: false, subtype: 'other_expense', parentCode: '8000' },
+    { code: '8040', name: 'Theft / Loss of Funds', type: 'EXPENSE', description: 'Stolen or lost money', isSystem: false, isContra: false, subtype: 'other_expense', parentCode: '8000' },
 
     // 4300 - Gain/Loss on Asset Disposal (For Assets Module)
     { code: '4300', name: 'Gain on Asset Disposal', type: 'INCOME', description: 'Profit from selling assets', isSystem: true, subtype: 'other_income' },
@@ -280,8 +675,6 @@ export const FAMILY_COA_TEMPLATE = [
 
     // Other Standard Business (5000 series for COGS)
     { code: '5199', name: 'Uncategorized Expense', type: 'EXPENSE', description: 'To be sorted', isSystem: true, subtype: 'operating_expense' },
-    { code: '5200', name: 'Cost of Goods Sold', type: 'EXPENSE', description: 'Direct business costs', isSystem: false, subtype: 'cogs' },
-    { code: '5400', name: 'Salaries & Wages', type: 'EXPENSE', description: 'Employee salaries', isSystem: false, subtype: 'operating_expense' },
 ];
 
 // ============================================
@@ -478,74 +871,7 @@ export async function seedFamilyCoA(tenantId, currency = 'KES') {
     }
 }
 
-// ============================================
-// CATEGORY TEMPLATE
-// ============================================
 
-/**
- * Standard Family Categories Template
- * These categories map to the Chart of Accounts
- */
-const FAMILY_CATEGORIES_TEMPLATE = [
-    // Income Categories
-    { name: 'Salary', type: 'income', icon: '💼', color: '#10B981' },
-    { name: 'Business', type: 'income', icon: '🏢', color: '#3B82F6' },
-    { name: 'Investment', type: 'income', icon: '📈', color: '#8B5CF6' },
-    { name: 'Gift', type: 'income', icon: '🎁', color: '#EC4899' },
-    { name: 'Rental', type: 'income', icon: '🏠', color: '#F59E0B' },
-    { name: 'Other Income', type: 'income', icon: '💰', color: '#6EE7B7' },
-
-    // Expense Categories
-    { name: 'Food', type: 'expense', icon: '🍔', color: '#EF4444' },
-    { name: 'Transport', type: 'expense', icon: '🚗', color: '#F97316' },
-    { name: 'Housing', type: 'expense', icon: '🏡', color: '#84CC16' },
-    { name: 'Utilities', type: 'expense', icon: '💡', color: '#14B8A6' },
-    { name: 'Healthcare', type: 'expense', icon: '🏥', color: '#06B6D4' },
-    { name: 'Education', type: 'expense', icon: '📚', color: '#3B82F6' },
-    { name: 'Entertainment', type: 'expense', icon: '🎬', color: '#8B5CF6' },
-    { name: 'Shopping', type: 'expense', icon: '🛍️', color: '#EC4899' },
-    { name: 'Communication', type: 'expense', icon: '📱', color: '#F43F5E' },
-    { name: 'Insurance', type: 'expense', icon: '🛡️', color: '#64748B' },
-    { name: 'Donations', type: 'expense', icon: '🤝', color: '#10B981' },
-    { name: 'Other Expenses', type: 'expense', icon: '📦', color: '#6B7280' },
-];
-
-/**
- * Seeds categories for a new family tenant
- * Called automatically when a new family is created
- * 
- * @param {number} tenantId - The tenant ID to seed categories for
- */
-export async function seedFamilyCategories(tenantId) {
-    try {
-        // Create all categories from template, skipping duplicates if they exist
-        const categoriesToCreate = FAMILY_CATEGORIES_TEMPLATE.map(cat => ({
-            tenantId,
-            name: cat.name,
-            type: cat.type,
-            icon: cat.icon,
-            color: cat.color,
-        }));
-
-        await prisma.category.createMany({
-            data: categoriesToCreate,
-            skipDuplicates: true,
-        });
-
-        // Clean up duplicates if any somehow exist (simple name-based check)
-        // Group by name/type and delete ids that are not the first one
-        // Note: Prisma doesn't have a simple distinct-delete, so we do this manually if needed.
-        // For now, createMany with skipDuplicates handles the "Preventing future creation" part.
-        // To fix CURRENT duplicates, we can run a cleanup query.
-
-        console.log(`[AccountingService] Synced/Seeded categories for tenant ${tenantId}`);
-
-        return categoriesToCreate.length;
-    } catch (error) {
-        console.error('[AccountingService] Error seeding categories:', error);
-        throw error;
-    }
-}
 
 // ============================================
 // PAYMENT METHODS TEMPLATE
