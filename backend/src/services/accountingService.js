@@ -939,6 +939,61 @@ export async function seedFamilyPaymentMethods(tenantId) {
 }
 
 // ============================================
+// CATEGORY TEMPLATE (Family)
+// ============================================
+
+/**
+ * Standard Family Categories Template (maps to Chart of Accounts)
+ */
+const FAMILY_CATEGORIES_TEMPLATE = [
+    { name: 'Salary', type: 'income', icon: '💼', color: '#10B981' },
+    { name: 'Business', type: 'income', icon: '🏢', color: '#3B82F6' },
+    { name: 'Investment', type: 'income', icon: '📈', color: '#8B5CF6' },
+    { name: 'Gift', type: 'income', icon: '🎁', color: '#EC4899' },
+    { name: 'Rental', type: 'income', icon: '🏠', color: '#F59E0B' },
+    { name: 'Other Income', type: 'income', icon: '💰', color: '#6EE7B7' },
+    { name: 'Food', type: 'expense', icon: '🍔', color: '#EF4444' },
+    { name: 'Transport', type: 'expense', icon: '🚗', color: '#F97316' },
+    { name: 'Housing', type: 'expense', icon: '🏡', color: '#84CC16' },
+    { name: 'Utilities', type: 'expense', icon: '💡', color: '#14B8A6' },
+    { name: 'Healthcare', type: 'expense', icon: '🏥', color: '#06B6D4' },
+    { name: 'Education', type: 'expense', icon: '📚', color: '#3B82F6' },
+    { name: 'Entertainment', type: 'expense', icon: '🎬', color: '#8B5CF6' },
+    { name: 'Shopping', type: 'expense', icon: '🛍️', color: '#EC4899' },
+    { name: 'Communication', type: 'expense', icon: '📱', color: '#F43F5E' },
+    { name: 'Insurance', type: 'expense', icon: '🛡️', color: '#64748B' },
+    { name: 'Donations', type: 'expense', icon: '🤝', color: '#10B981' },
+    { name: 'Other Expenses', type: 'expense', icon: '📦', color: '#6B7280' },
+];
+
+/**
+ * Seeds categories for a new family tenant (called on registration)
+ * @param {number} tenantId - The tenant ID to seed categories for
+ */
+export async function seedFamilyCategories(tenantId) {
+    try {
+        const categoriesToCreate = FAMILY_CATEGORIES_TEMPLATE.map(cat => ({
+            tenantId,
+            name: cat.name,
+            type: cat.type,
+            icon: cat.icon,
+            color: cat.color,
+        }));
+
+        await prisma.category.createMany({
+            data: categoriesToCreate,
+            skipDuplicates: true,
+        });
+
+        console.log(`[AccountingService] Seeded categories for tenant ${tenantId}`);
+        return categoriesToCreate.length;
+    } catch (error) {
+        console.error('[AccountingService] Error seeding categories:', error);
+        throw error;
+    }
+}
+
+// ============================================
 // ACCOUNT MAPPING SERVICE
 // ============================================
 
