@@ -9,7 +9,13 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "db:init": "node scripts/initDb.js",
-    "seed:categories": "node scripts/seedCategories.js"
+    "seed": "node scripts/seed_master.js",
+    "seed:assets": "node scripts/seed_assets.js",
+    "seed:liabilities": "node scripts/seed_liabilities_update.js",
+    "seed:equity": "node scripts/seed_equity.js",
+    "seed:revenue": "node scripts/seed_revenue.js",
+    "seed:expenses": "node scripts/seed_expenses.js",
+    "seed:suppliers": "node scripts/seed_kenyan_suppliers.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

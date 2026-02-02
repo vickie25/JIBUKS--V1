@@ -75,12 +75,21 @@ router.get('/profit-loss', async (req, res) => {
         const { tenantId } = req.user;
 
         if (!tenantId) {
+            console.error('[P&L] No tenantId found for user');
             return res.status(400).json({ error: 'User is not part of any family' });
         }
 
         const { startDate, endDate } = parseDateRange(req.query);
+        console.log(`[P&L] Generating report for tenant ${tenantId}, period: ${startDate} to ${endDate}`);
 
         const profitLoss = await getProfitAndLoss(tenantId, startDate, endDate);
+        console.log(`[P&L] Report generated successfully:`, {
+            incomeLines: profitLoss.income?.lines?.length || 0,
+            expenseLines: profitLoss.expenses?.lines?.length || 0,
+            totalIncome: profitLoss.income?.total || 0,
+            totalExpenses: profitLoss.expenses?.total || 0,
+            netIncome: profitLoss.netIncome || 0
+        });
 
         res.json({
             report: 'Profit & Loss Statement',
@@ -88,8 +97,12 @@ router.get('/profit-loss', async (req, res) => {
             generatedAt: new Date(),
         });
     } catch (error) {
-        console.error('Error generating P&L:', error);
-        res.status(500).json({ error: 'Failed to generate profit & loss statement' });
+        console.error('[P&L] Error generating P&L:', error);
+        console.error('[P&L] Error stack:', error.stack);
+        res.status(500).json({
+            error: 'Failed to generate profit & loss statement',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 
