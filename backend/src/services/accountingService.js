@@ -62,14 +62,6 @@ export const FAMILY_COA_TEMPLATE = [
     // ----------------------------------------
     // CASH & CASH EQUIVALENTS (1000-1099)
     // ----------------------------------------
-
-    { code: '1200', name: 'Loans to Friends/Family', type: 'ASSET', description: 'Money lent to cousins/friends', isSystem: true, isContra: false, subtype: 'receivable' },
-    { code: '1210', name: 'Salary Arrears', type: 'ASSET', description: 'Work done but not paid yet', isSystem: false, isContra: false, subtype: 'receivable' },
-    { code: '1220', name: 'Rent Security Deposits', type: 'ASSET', description: 'Refundable deposit held by Landlord', isSystem: false, isContra: false, subtype: 'receivable' },
-    { code: '1230', name: 'Utility Deposits', type: 'ASSET', description: 'Deposit held by Kenya Power/Water', isSystem: false, isContra: false, subtype: 'receivable' },
-    { code: '1240', name: 'Prepaid Expenses', type: 'ASSET', description: 'Services paid for but not used yet', isSystem: false, isContra: false, subtype: 'receivable' },
-    { code: '1250', name: 'Accounts Receivable', type: 'ASSET', description: 'Money owed by customers', isSystem: true, isContra: false, subtype: 'ar', systemTag: 'AR' },
-
     { code: '1000', name: 'Cash & Cash Equivalents', type: 'ASSET', description: 'Total physical cash and equivalents', isSystem: true, isContra: false, subtype: 'cash', isParent: true },
 
     // Physical Cash (1001-1009)
@@ -130,7 +122,6 @@ export const FAMILY_COA_TEMPLATE = [
     { code: '1094', name: 'Payoneer', type: 'ASSET', description: 'Freelancer payments', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'online_wallet', parentCode: '1090' },
     { code: '1095', name: 'Binance Wallet', type: 'ASSET', description: 'Crypto exchange wallet', isSystem: false, isContra: false, isPaymentEligible: true, subtype: 'crypto', parentCode: '1090' },
     { code: '1096', name: 'USDT (Tether)', type: 'ASSET', description: 'Stablecoin holdings', isSystem: false, isContra: false, isPaymentEligible: false, subtype: 'crypto', parentCode: '1090' },
-
 
     // ----------------------------------------
     // ACCOUNTS RECEIVABLE (1100-1149)
@@ -821,7 +812,7 @@ export async function seedFamilyCoA(tenantId, currency = 'KES') {
                     name: acc.name,
                     description: acc.description,
                     subtype: acc.subtype,
-                    ...(acc.systemTag != null && { systemTag: acc.systemTag }),
+                    // We don't update type/conra/system to avoid breaking things, unless necessary
                 },
                 create: {
                     tenantId,
@@ -833,7 +824,6 @@ export async function seedFamilyCoA(tenantId, currency = 'KES') {
                     isSystem: acc.isSystem || false,
                     isContra: acc.isContra || false,
                     isPaymentEligible: acc.isPaymentEligible || false,
-                    systemTag: acc.systemTag || null,
                     isActive: true,
                     currency,
                 }
@@ -939,39 +929,62 @@ export async function seedFamilyPaymentMethods(tenantId) {
 }
 
 // ============================================
-// CATEGORY TEMPLATE (Family)
+// CATEGORIES TEMPLATE
 // ============================================
 
 /**
- * Standard Family Categories Template (maps to Chart of Accounts)
+ * Standard Family Categories Template
  */
 const FAMILY_CATEGORIES_TEMPLATE = [
-    { name: 'Salary', type: 'income', icon: '💼', color: '#10B981' },
-    { name: 'Business', type: 'income', icon: '🏢', color: '#3B82F6' },
-    { name: 'Investment', type: 'income', icon: '📈', color: '#8B5CF6' },
-    { name: 'Gift', type: 'income', icon: '🎁', color: '#EC4899' },
-    { name: 'Rental', type: 'income', icon: '🏠', color: '#F59E0B' },
-    { name: 'Other Income', type: 'income', icon: '💰', color: '#6EE7B7' },
-    { name: 'Food', type: 'expense', icon: '🍔', color: '#EF4444' },
-    { name: 'Transport', type: 'expense', icon: '🚗', color: '#F97316' },
-    { name: 'Housing', type: 'expense', icon: '🏡', color: '#84CC16' },
-    { name: 'Utilities', type: 'expense', icon: '💡', color: '#14B8A6' },
-    { name: 'Healthcare', type: 'expense', icon: '🏥', color: '#06B6D4' },
-    { name: 'Education', type: 'expense', icon: '📚', color: '#3B82F6' },
-    { name: 'Entertainment', type: 'expense', icon: '🎬', color: '#8B5CF6' },
-    { name: 'Shopping', type: 'expense', icon: '🛍️', color: '#EC4899' },
-    { name: 'Communication', type: 'expense', icon: '📱', color: '#F43F5E' },
-    { name: 'Insurance', type: 'expense', icon: '🛡️', color: '#64748B' },
-    { name: 'Donations', type: 'expense', icon: '🤝', color: '#10B981' },
-    { name: 'Other Expenses', type: 'expense', icon: '📦', color: '#6B7280' },
+    // Income
+    { name: 'Salary', type: 'income', icon: 'wallet', color: '#10B981' },
+    { name: 'Business', type: 'income', icon: 'briefcase', color: '#3B82F6' },
+    { name: 'Investment', type: 'income', icon: 'trending-up', color: '#8B5CF6' },
+    { name: 'Gift', type: 'income', icon: 'gift', color: '#EC4899' },
+    { name: 'Rental', type: 'income', icon: 'home', color: '#F59E0B' },
+    { name: 'Other Income', type: 'income', icon: 'cash', color: '#9CA3AF' },
+
+    // Expense
+    { name: 'Food', type: 'expense', icon: 'cake', color: '#EF4444' },
+    { name: 'Groceries', type: 'expense', icon: 'shopping-cart', color: '#F87171' },
+    { name: 'Transport', type: 'expense', icon: 'truck', color: '#F59E0B' },
+    { name: 'Housing', type: 'expense', icon: 'home', color: '#3B82F6' },
+    { name: 'Rent', type: 'expense', icon: 'key', color: '#60A5FA' },
+    { name: 'Utilities', type: 'expense', icon: 'lightning-bolt', color: '#FBBF24' },
+    { name: 'Healthcare', type: 'expense', icon: 'heart', color: '#EF4444' },
+    { name: 'Education', type: 'expense', icon: 'book-open', color: '#8B5CF6' },
+    { name: 'Entertainment', type: 'expense', icon: 'film', color: '#EC4899' },
+    { name: 'Shopping', type: 'expense', icon: 'shopping-bag', color: '#DB2777' },
+    { name: 'Communication', type: 'expense', icon: 'phone', color: '#10B981' },
+    { name: 'Insurance', type: 'expense', icon: 'shield-check', color: '#6B7280' },
+    { name: 'Donations', type: 'expense', icon: 'heart', color: '#EC4899' },
+    { name: 'Subscriptions', type: 'expense', icon: 'calendar', color: '#6366F1' },
+    { name: 'Personal Care', type: 'expense', icon: 'user', color: '#F472B6' },
+    { name: 'Pet Care', type: 'expense', icon: 'emoji-happy', color: '#A5F3FC' },
+    { name: 'Childcare', type: 'expense', icon: 'users', color: '#FCD34D' },
+    { name: 'Gym', type: 'expense', icon: 'lightning-bolt', color: '#EF4444' },
+    { name: 'Other Expenses', type: 'expense', icon: 'dots-horizontal', color: '#9CA3AF' },
 ];
 
 /**
- * Seeds categories for a new family tenant (called on registration)
+ * Seeds categories for a new family tenant
+ * Called automatically when a new family is created
+ * 
  * @param {number} tenantId - The tenant ID to seed categories for
  */
 export async function seedFamilyCategories(tenantId) {
     try {
+        // Check if categories already exist
+        const existingCategories = await prisma.category.count({
+            where: { tenantId }
+        });
+
+        if (existingCategories > 0) {
+            console.log(`[AccountingService] Tenant ${tenantId} already has ${existingCategories} categories, skipping seed`);
+            return;
+        }
+
+        // Create all categories from template
         const categoriesToCreate = FAMILY_CATEGORIES_TEMPLATE.map(cat => ({
             tenantId,
             name: cat.name,
@@ -982,10 +995,11 @@ export async function seedFamilyCategories(tenantId) {
 
         await prisma.category.createMany({
             data: categoriesToCreate,
-            skipDuplicates: true,
+            skipDuplicates: true
         });
 
-        console.log(`[AccountingService] Seeded categories for tenant ${tenantId}`);
+        console.log(`[AccountingService] Seeded ${categoriesToCreate.length} categories for tenant ${tenantId}`);
+
         return categoriesToCreate.length;
     } catch (error) {
         console.error('[AccountingService] Error seeding categories:', error);
@@ -1069,56 +1083,6 @@ export async function resolveAccountIds(tenantId, debitCode, creditCode) {
         debitAccountId: debitAccount?.id || null,
         creditAccountId: creditAccount?.id || null,
     };
-}
-
-// ============================================
-// BUSINESS / INVOICE COA HELPERS
-// ============================================
-
-/** Resolve Accounts Receivable account (code 1250 or systemTag AR) for a tenant */
-export async function getAccountsReceivableAccountId(tenantId) {
-    const account = await prisma.account.findFirst({
-        where: {
-            tenantId,
-            OR: [
-                { code: '1250' },
-                { systemTag: 'AR' },
-                { subtype: 'ar' },
-            ],
-            isActive: true,
-        },
-    });
-    return account?.id ?? null;
-}
-
-/** Resolve default revenue account (4100 Product Sales) for invoice line items */
-export async function getDefaultRevenueAccountId(tenantId) {
-    const account = await prisma.account.findFirst({
-        where: {
-            tenantId,
-            type: 'INCOME',
-            OR: [
-                { code: '4100' },
-                { code: '4110' },
-            ],
-            isActive: true,
-        },
-        orderBy: { code: 'asc' },
-    });
-    return account?.id ?? null;
-}
-
-/** Resolve default payment (cash/bank) account for invoice payments - prefers 1010 M-PESA */
-export async function getDefaultPaymentAccountId(tenantId) {
-    const account = await prisma.account.findFirst({
-        where: {
-            tenantId,
-            isPaymentEligible: true,
-            isActive: true,
-        },
-        orderBy: { code: 'asc' },
-    });
-    return account?.id ?? null;
 }
 
 // ============================================
