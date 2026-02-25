@@ -26,11 +26,11 @@ model Tenant {
   budgets               Budget[]
   goals                 Goal[]
   users                 User[]
-  transactions          Transaction[]
+  itemTypes             ItemType[]
+  accounts              Account[]
   categories            Category[]
   paymentMethods        PaymentMethod[]
   recurringTransactions RecurringTransaction[]
-  accounts              Account[]
   journals              Journal[]
   vendors               Vendor[]
   purchases             Purchase[]
@@ -49,6 +49,7 @@ model Tenant {
   transfers             Transfer[]
   loans                 Loan[]
   vatRates              VatRate[]
+  transactions          Transaction[]
 
   @@map("tenants")
 }
@@ -90,11 +91,12 @@ model Account {
   metadata        Json?         // Flexible field for Loan Terms (rate, installment, dates) or Bank Details
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
+  detailType      String?       @map("detail_type") // For granular filtering like "Sales of Product Income"
 
   // Relations
   tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  parent          Account?      @relation("AccountHierarchy", fields: [parentId], references: [id])
-  children        Account[]     @relation("AccountHierarchy")
+  parent          Account?      @relation("AccountToAccount", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children        Account[]     @relation("AccountToAccount")
   journalLines    JournalLine[]
   invoiceItems    InvoiceItem[]
   invoicePayments InvoicePayment[]
@@ -316,6 +318,12 @@ model Category {
   type      String   // 'income' or 'expense'
   icon      String?
   color     String?
+  
+  isSubCategory Boolean   @default(false) @map("is_sub_category")
+  parentId      Int?      @map("parent_id")
+  parent        Category? @relation("SubCategories", fields: [parentId], references: [id])
+  children      Category[] @relation("SubCategories")
+  
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -538,9 +546,24 @@ model PurchasePayment {
 
 // Product Type Enum
 enum ProductType {
-  GOODS       // Physical items - Track stock
-  SERVICE     // Services - No stock tracking
-  BUNDLE      // Kit/Bundle of multiple items
+  SERVICE
+  INVENTORY_ITEM
+  NON_INVENTORY_ITEM
+  BUNDLE
+}
+
+model ItemType {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int      @map("tenant_id")
+  name      String   // Service, Inventory item, Non-inventory item, Bundle
+  code      String   // SERVICE, INVENTORY_ITEM, NON_INVENTORY_ITEM, BUNDLE
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, name])
+  @@unique([tenantId, code])
+  @@map("item_types")
 }
 
 // Inventory/Stock Management - Enhanced
@@ -556,7 +579,7 @@ model InventoryItem {
   imageUrl            String?         @map("image_url") // Product photo
   
   // ========== CLASSIFICATION ==========
-  productType         ProductType     @default(GOODS) @map("product_type")
+  productType         ProductType     @default(INVENTORY_ITEM) @map("product_type")
   category            String?         // "Electronics", "Food", "Apparel"
   brand               String?         // "Samsung", "Nike"
   unit                String          @default("pcs") // "pcs", "kg", "liters", "box"
