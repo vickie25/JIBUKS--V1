@@ -1247,7 +1247,7 @@ model Admin {
 // ============================================
 
 model AdminTask {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   title       String
   status      String   @default("todo") // backlog, todo, in_progress, done, canceled
   label       String   @default("feature") // bug, feature, documentation
