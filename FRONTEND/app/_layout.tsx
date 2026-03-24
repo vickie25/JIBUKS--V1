@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { LogBox } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
@@ -28,12 +28,48 @@ LogBox.ignoreLogs([
 ]);
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { AccountsProvider } from '@/contexts/AccountsContext';
 
 export const unstable_settings = {
   initialRouteName: 'slideshow',
 };
+
+function AuthNavigationGuard() {
+  const router = useRouter();
+  const segments = useSegments();
+  const { isAuthenticated, isInitializing } = useAuth();
+
+  useEffect(() => {
+    if (isInitializing) return;
+
+    const currentRoute = segments.join('/');
+
+    const publicRoutes = new Set([
+      'slideshow',
+      'auth',
+      'login',
+      'signup',
+      'forgot-password',
+      'verify-otp',
+      'reset-password',
+      'password-reset-success',
+    ]);
+
+    const isPublicRoute = publicRoutes.has(currentRoute);
+
+    if (!isAuthenticated && !isPublicRoute) {
+      router.replace('/login');
+      return;
+    }
+
+    if (isAuthenticated && isPublicRoute) {
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated, isInitializing, segments, router]);
+
+  return null;
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -59,6 +95,7 @@ export default function RootLayout() {
     <AuthProvider>
       <AccountsProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <AuthNavigationGuard />
           <Stack
             screenOptions={{
               animation: 'slide_from_right',
