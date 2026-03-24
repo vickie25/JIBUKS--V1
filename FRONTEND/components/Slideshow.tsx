@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View, Image, Dimensions, ScrollView, TouchableOpacity, NativeSyntheticEvent, NativeScrollEvent } from 'react-native'
-import React, { useState, useRef } from 'react'
+import { StyleSheet, Text, View, Image, Dimensions, ScrollView, TouchableOpacity, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator } from 'react-native'
+import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'expo-router'
+import { useAuth } from '@/contexts/AuthContext'
 
 const { width } = Dimensions.get('window')
 
@@ -8,6 +9,23 @@ const Slideshow = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const scrollViewRef = useRef<ScrollView>(null)
   const router = useRouter()
+  const { user, isInitializing } = useAuth()
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (!isInitializing && user) {
+      router.replace('/(tabs)')
+    }
+  }, [user, isInitializing])
+
+  // Show loading while checking auth status
+  if (isInitializing) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    )
+  }
 
   // Slideshow data with placeholder content (replace images when you add them)
   const slides = [
