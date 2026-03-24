@@ -1,7 +1,9 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, AppStateStatus } from 'react-native';
+import { router } from 'expo-router';
 import apiService, { User, LoginCredentials, RegisterData, ApiError } from '../services/api';
+import { showToast } from '../utils/toast';
 
 const SESSION_TIMEOUT_MS = 10 * 60 * 1000;
 const LAST_ACTIVE_AT_KEY = 'lastActiveAt';
@@ -60,6 +62,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (awayDuration >= SESSION_TIMEOUT_MS) {
               await apiService.logout();
               setUser(null);
+              showToast.error('Session expired', 'Please log in again.');
+              router.replace('/login');
             }
           }
         } catch (appStateError) {
