@@ -30,6 +30,7 @@ LogBox.ignoreLogs([
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { AccountsProvider } from '@/contexts/AccountsContext';
+import { getAuthenticatedHomeRoute } from '@/utils/authRouting';
 
 export const unstable_settings = {
   initialRouteName: 'slideshow',
@@ -38,7 +39,7 @@ export const unstable_settings = {
 function AuthNavigationGuard() {
   const router = useRouter();
   const segments = useSegments();
-  const { isAuthenticated, isInitializing } = useAuth();
+  const { user, isAuthenticated, isInitializing } = useAuth();
 
   useEffect(() => {
     if (isInitializing) return;
@@ -64,9 +65,9 @@ function AuthNavigationGuard() {
     }
 
     if (isAuthenticated && isPublicRoute) {
-      router.replace('/(tabs)');
+      router.replace(getAuthenticatedHomeRoute(user));
     }
-  }, [isAuthenticated, isInitializing, segments, router]);
+  }, [user, isAuthenticated, isInitializing, segments, router]);
 
   return null;
 }
