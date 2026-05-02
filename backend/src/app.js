@@ -19,9 +19,11 @@ import businessRoutes from './routes/business.js';
 // Professional Accounting Routes
 import vendorsRoutes from './routes/vendors.js';
 import purchasesRoutes from './routes/purchases.js';
+import adminRoutes from './routes/adminRoutes.js';
 import inventoryRoutes from './routes/inventory.js';
 import bankRoutes from './routes/bank.js';
 import fixedAssetsRoutes from './routes/fixed-assets.js';
+import taskRoutes from './routes/taskRoutes.js';
 import customersRoutes from './routes/customers.js';
 import invoicesRoutes from './routes/invoices.js';
 import chequesRoutes from './routes/cheques.js';
@@ -144,6 +146,8 @@ app.use('/api/accounts', accountsRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/business', businessRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/tasks', taskRoutes);
 
 // Professional Accounting Routes
 app.use('/api/vendors', vendorsRoutes);
