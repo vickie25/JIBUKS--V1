@@ -15,6 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiService from '@/services/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { confirmAndLogout } from '@/utils/logout';
 
 const ONBOARDING_KEY = 'businessOnboardingComplete';
 
@@ -43,6 +45,7 @@ function formatActivityDate(d: string) {
 export default function BusinessDashboardScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
+    const { logout, isLoading: isAuthLoading } = useAuth();
 
     const [userName, setUserName] = useState<string>('');
     const [summary, setSummary] = useState<{
@@ -144,6 +147,10 @@ export default function BusinessDashboardScreen() {
         loadDashboard();
     }, [loadDashboard]);
 
+    const handleHeaderLogout = () => {
+        confirmAndLogout(logout, router.replace);
+    };
+
     const displayName = userName || ownerName || 'There';
 
     // Wait for onboarding check before showing dashboard (avoids flash before redirect)
@@ -169,6 +176,19 @@ export default function BusinessDashboardScreen() {
                         colors={['#1e3a8a', '#1e3a8a']} // Solid deep blue as per screenshot
                         style={styles.headerGradient}
                     >
+                        <TouchableOpacity
+                            style={styles.headerLogoutButton}
+                            onPress={handleHeaderLogout}
+                            disabled={isAuthLoading}
+                            activeOpacity={0.8}
+                        >
+                            {isAuthLoading ? (
+                                <ActivityIndicator size="small" color="#ffffff" />
+                            ) : (
+                                <Ionicons name="log-out-outline" size={20} color="#ffffff" />
+                            )}
+                        </TouchableOpacity>
+
                         <View style={styles.profileSection}>
                             <View style={styles.avatarBorder}>
                                 <Image
@@ -372,6 +392,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40,
+    },
+    headerLogoutButton: {
+        position: 'absolute',
+        top: 16,
+        right: 16,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 2,
     },
     profileSection: {
         alignItems: 'center',

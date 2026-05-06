@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'rea
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { getAuthenticatedHomeRoute } from '@/utils/authRouting';
 
 const { width } = Dimensions.get('window');
 
@@ -11,16 +12,7 @@ export default function WelcomeScreen() {
   const { user } = useAuth();
 
   const handleBegin = () => {
-    // Route to the right flow based on tenant type (set at signup)
-    const tenantType = user?.tenantType;
-    if (tenantType === 'BUSINESS') {
-      router.replace('/business-tabs');
-    } else if (tenantType === 'FAMILY') {
-      router.replace('/family-setup');
-    } else {
-      // Fallback: no tenant type (e.g. legacy user) — show account type picker
-      router.push('/account-type');
-    }
+    router.replace(getAuthenticatedHomeRoute(user, '/account-type'));
   };
 
   return (

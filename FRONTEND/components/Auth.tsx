@@ -1,11 +1,30 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native'
+import React, { useEffect } from 'react'
 import { useRouter } from 'expo-router'
+import { useAuth } from '@/contexts/AuthContext'
+import { getAuthenticatedHomeRoute } from '@/utils/authRouting'
 
 const { width, height } = Dimensions.get('window')
 
 const Auth = () => {
   const router = useRouter()
+  const { user, isInitializing } = useAuth()
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (!isInitializing && user) {
+      router.replace(getAuthenticatedHomeRoute(user))
+    }
+  }, [user, isInitializing])
+
+  // Show loading while checking auth status
+  if (isInitializing) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#2E4BC7" />
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
