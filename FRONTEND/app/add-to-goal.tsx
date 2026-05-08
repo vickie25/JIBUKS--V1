@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     TextInput,
     SafeAreaView,
+    StatusBar,
     Alert,
     ActivityIndicator,
 } from 'react-native';
@@ -14,6 +15,40 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import apiService from '@/services/api';
+
+const C = {
+    navy: '#1a3a8f',
+    navyDark: '#0e2470',
+    gold: '#F59E0B',
+    bg: '#F5F7FA',
+    white: '#ffffff',
+    text: '#1F2937',
+    sub: '#6B7280',
+    border: '#E5E7EB',
+};
+
+function ProgressRing({ pct, size = 64 }: { pct: number; size?: number }) {
+    const r = (size - 10) / 2;
+    const circumference = 2 * Math.PI * r;
+    const filled = Math.min(pct, 100) / 100;
+    const gap = circumference * (1 - filled);
+    return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{
+                position: 'absolute', width: size, height: size, borderRadius: size / 2,
+                borderWidth: 5, borderColor: '#E5E7EB',
+            }} />
+            <View style={{
+                position: 'absolute', width: size, height: size, borderRadius: size / 2,
+                borderWidth: 5, borderColor: C.gold, borderRightColor: 'transparent',
+                borderBottomColor: filled > 0.5 ? C.gold : 'transparent',
+                transform: [{ rotate: `${-90 + filled * 360}deg` }],
+                opacity: filled > 0 ? 1 : 0,
+            }} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: C.text }}>{Math.round(pct)}%</Text>
+        </View>
+    );
+}
 
 export default function AddToGoalScreen() {
     const router = useRouter();
@@ -25,6 +60,7 @@ export default function AddToGoalScreen() {
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'cash' | 'bank'>('mpesa');
 
     useEffect(() => {
         if (goalId) {
@@ -110,463 +146,167 @@ export default function AddToGoalScreen() {
 
     if (loading) {
         return (
-            <SafeAreaView style={styles.container}>
-                <LinearGradient colors={['#7c3aed', '#6d28d9']} style={styles.header}>
-                    <View style={styles.headerContent}>
-                        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                            <Ionicons name="arrow-back" size={24} color="#fff" />
-                        </TouchableOpacity>
-                        <Text style={styles.headerTitle}>Add to Goal</Text>
-                        <View style={{ width: 40 }} />
-                    </View>
+            <View style={s.root}>
+                <StatusBar barStyle="light-content" />
+                <LinearGradient colors={[C.navy, C.navyDark]} style={s.header}>
+                    <SafeAreaView>
+                        <View style={s.headerRow}>
+                            <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
+                                <Ionicons name="arrow-back" size={22} color={C.gold} />
+                            </TouchableOpacity>
+                            <Text style={s.headerTitle}>Top Up Goal</Text>
+                            <View style={{ width: 38 }} />
+                        </View>
+                    </SafeAreaView>
                 </LinearGradient>
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#7c3aed" />
-                    <Text style={styles.loadingText}>Loading goal...</Text>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <ActivityIndicator size="large" color={C.navy} />
                 </View>
-            </SafeAreaView>
+            </View>
         );
     }
 
-    if (!goal) {
-        return null;
-    }
+    if (!goal) return null;
 
     const progress = parseFloat(goal.progress);
     const remaining = goal.remaining;
 
+    const PAYMENT_METHODS = [
+        { key: 'mpesa', label: 'M-PESA', icon: 'phone-portrait-outline' as const },
+        { key: 'cash',  label: 'CASH',   icon: 'cash-outline' as const },
+        { key: 'bank',  label: 'BANK',   icon: 'business-outline' as const },
+    ];
+
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Header */}
-            <LinearGradient colors={['#7c3aed', '#6d28d9']} style={styles.header}>
-                <View style={styles.headerContent}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color="#fff" />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Add to Goal</Text>
-                    <View style={{ width: 40 }} />
-                </View>
+        <View style={s.root}>
+            <StatusBar barStyle="light-content" />
+
+            {/* ── HEADER ── */}
+            <LinearGradient colors={[C.navy, C.navyDark]} style={s.header}>
+                <SafeAreaView>
+                    <View style={s.headerRow}>
+                        <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
+                            <Ionicons name="arrow-back" size={22} color={C.gold} />
+                        </TouchableOpacity>
+                        <Text style={s.headerTitle}>Top Up Goal</Text>
+                        <View style={{ width: 38 }} />
+                    </View>
+                </SafeAreaView>
             </LinearGradient>
 
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-                {/* Goal Info Card */}
-                <View style={styles.goalCard}>
-                    <View style={styles.goalHeader}>
-                        <View style={styles.goalIconContainer}>
-                            <Ionicons name="trophy" size={32} color="#7c3aed" />
-                        </View>
-                        <View style={styles.goalInfo}>
-                            <Text style={styles.goalName}>{goal.name}</Text>
-                            {goal.description && (
-                                <Text style={styles.goalDescription}>{goal.description}</Text>
-                            )}
-                        </View>
-                    </View>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
 
-                    {/* Progress */}
-                    <View style={styles.progressSection}>
-                        <View style={styles.progressHeader}>
-                            <Text style={styles.progressLabel}>Current Progress</Text>
-                            <Text style={styles.progressPercentage}>{progress.toFixed(1)}%</Text>
+                {/* ── GOAL CARD ── */}
+                <View style={s.card}>
+                    <View style={s.cardRow}>
+                        <View style={{ flex: 1 }}>
+                            <Text style={s.goalName}>{goal.name}</Text>
+                            <Text style={s.goalDesc}>{(goal.description || 'SAVINGS GOAL').toUpperCase()}</Text>
+                            <Text style={s.goalAmount}>{formatCurrency(goal.currentAmount)}</Text>
+                            <Text style={s.goalOf}>of {formatCurrency(goal.targetAmount)}</Text>
                         </View>
-                        <View style={styles.progressBarContainer}>
-                            <View style={[styles.progressBar, { width: `${Math.min(progress, 100)}%` }]} />
-                        </View>
-                        <View style={styles.amountsRow}>
-                            <Text style={styles.currentAmount}>{formatCurrency(goal.currentAmount)}</Text>
-                            <Text style={styles.targetAmount}>{formatCurrency(goal.targetAmount)}</Text>
-                        </View>
+                        <ProgressRing pct={progress} size={72} />
                     </View>
-
-                    {/* Remaining */}
-                    <View style={styles.remainingCard}>
-                        <Text style={styles.remainingLabel}>Remaining to Goal</Text>
-                        <Text style={styles.remainingAmount}>{formatCurrency(remaining)}</Text>
+                    <View style={s.progressBar}>
+                        <View style={[s.progressFill, { width: `${Math.min(progress, 100)}%` as any }]} />
                     </View>
                 </View>
 
-                {/* Amount Input */}
-                <View style={styles.amountSection}>
-                    <Text style={styles.sectionLabel}>Contribution Amount (KES)</Text>
-                    <View style={styles.amountInputContainer}>
-                        <Text style={styles.currencySymbol}>KES</Text>
+                {/* ── AMOUNT ── */}
+                <View style={s.card}>
+                    <Text style={s.fieldLabel}>TOP UP AMOUNT</Text>
+                    <View style={s.amountRow}>
+                        <Text style={s.amountKes}>KES</Text>
                         <TextInput
-                            style={styles.amountInput}
-                            placeholder="0"
-                            placeholderTextColor="#d1d5db"
-                            keyboardType="numeric"
+                            style={s.amountInput}
                             value={amount}
                             onChangeText={setAmount}
-                            autoFocus
+                            keyboardType="decimal-pad"
+                            placeholder="0"
+                            placeholderTextColor="#CBD5E1"
                         />
                     </View>
-                    {amount && parseFloat(amount) > 0 && (
-                        <View style={styles.calculationCard}>
-                            <View style={styles.calculationRow}>
-                                <Text style={styles.calculationLabel}>Current:</Text>
-                                <Text style={styles.calculationValue}>{formatCurrency(goal.currentAmount)}</Text>
-                            </View>
-                            <View style={styles.calculationRow}>
-                                <Text style={styles.calculationLabel}>Adding:</Text>
-                                <Text style={[styles.calculationValue, { color: '#7c3aed' }]}>
-                                    +{formatCurrency(parseFloat(amount))}
-                                </Text>
-                            </View>
-                            <View style={[styles.calculationRow, styles.calculationTotal]}>
-                                <Text style={styles.calculationTotalLabel}>New Total:</Text>
-                                <Text style={styles.calculationTotalValue}>
-                                    {formatCurrency(goal.currentAmount + parseFloat(amount))}
-                                </Text>
-                            </View>
-                            <View style={styles.calculationRow}>
-                                <Text style={styles.calculationLabel}>New Progress:</Text>
-                                <Text style={[styles.calculationValue, { color: '#10b981' }]}>
-                                    {((goal.currentAmount + parseFloat(amount)) / goal.targetAmount * 100).toFixed(1)}%
-                                </Text>
-                            </View>
-                        </View>
-                    )}
+                    <View style={s.chips}>
+                        {[1000, 5000, 10000].map((v) => (
+                            <TouchableOpacity key={v} style={s.chip}
+                                onPress={() => setAmount((prev) => ((parseFloat(prev) || 0) + v).toString())}>
+                                <Text style={s.chipTxt}>+{v.toLocaleString()}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 </View>
 
-                {/* Description */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionLabel}>Description (Optional)</Text>
+                {/* ── PAYMENT METHOD ── */}
+                <View style={s.card}>
+                    <Text style={s.fieldLabel}>PAYMENT METHOD</Text>
+                    <View style={s.pmRow}>
+                        {PAYMENT_METHODS.map((m) => {
+                            const active = paymentMethod === m.key;
+                            return (
+                                <TouchableOpacity key={m.key} style={[s.pmBtn, active && s.pmBtnActive]}
+                                    onPress={() => setPaymentMethod(m.key as any)}>
+                                    <Ionicons name={m.icon} size={22} color={active ? C.gold : C.sub} />
+                                    <Text style={[s.pmLabel, active && s.pmLabelActive]}>{m.label}</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                </View>
+
+                {/* ── NOTE ── */}
+                <View style={s.card}>
+                    <Text style={s.fieldLabel}>ADD A NOTE (OPTIONAL)</Text>
                     <TextInput
-                        style={styles.textInput}
-                        placeholder="e.g., Monthly savings"
-                        placeholderTextColor="#9ca3af"
+                        style={s.noteInput}
+                        placeholder="What's this for?"
+                        placeholderTextColor="#9CA3AF"
                         value={description}
                         onChangeText={setDescription}
                     />
                 </View>
 
-                {/* Quick Amount Buttons */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionLabel}>Quick Amounts</Text>
-                    <View style={styles.quickAmountsGrid}>
-                        {[500, 1000, 2000, 5000].map((quickAmount) => (
-                            <TouchableOpacity
-                                key={quickAmount}
-                                style={styles.quickAmountButton}
-                                onPress={() => setAmount(quickAmount.toString())}
-                            >
-                                <Text style={styles.quickAmountText}>{formatCurrency(quickAmount)}</Text>
-                            </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity
-                            style={[styles.quickAmountButton, styles.quickAmountButtonSpecial]}
-                            onPress={() => setAmount(remaining.toString())}
-                        >
-                            <Text style={[styles.quickAmountText, { color: '#7c3aed' }]}>
-                                Complete Goal
-                            </Text>
-                            <Text style={[styles.quickAmountSubtext, { color: '#7c3aed' }]}>
-                                {formatCurrency(remaining)}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                {/* Submit Button */}
-                <TouchableOpacity
-                    style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
-                    onPress={handleSubmit}
-                    disabled={submitting}
-                >
-                    {submitting ? (
-                        <ActivityIndicator color="#fff" />
-                    ) : (
-                        <>
-                            <Ionicons name="add-circle" size={24} color="#fff" />
-                            <Text style={styles.submitButtonText}>Add Contribution</Text>
-                        </>
+                {/* ── SUBMIT ── */}
+                <TouchableOpacity style={[s.submitBtn, submitting && { opacity: 0.7 }]}
+                    onPress={handleSubmit} disabled={submitting}>
+                    {submitting ? <ActivityIndicator color="#fff" /> : (
+                        <Text style={s.submitTxt}>Top Up  →</Text>
                     )}
                 </TouchableOpacity>
 
-                <View style={{ height: 40 }} />
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f3f4f6',
-    },
-    header: {
-        paddingTop: 20,
-        paddingBottom: 20,
-        paddingHorizontal: 20,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
-    },
-    headerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    backButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#fff',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingText: {
-        marginTop: 16,
-        fontSize: 16,
-        color: '#6b7280',
-    },
-    content: {
-        flex: 1,
-    },
-    goalCard: {
-        backgroundColor: '#fff',
-        marginHorizontal: 20,
-        marginTop: 20,
-        borderRadius: 20,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 5,
-    },
-    goalHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    goalIconContainer: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: '#f3e8ff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 16,
-    },
-    goalInfo: {
-        flex: 1,
-    },
-    goalName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#1f2937',
-        marginBottom: 4,
-    },
-    goalDescription: {
-        fontSize: 14,
-        color: '#6b7280',
-    },
-    progressSection: {
-        marginBottom: 16,
-    },
-    progressHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    progressLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#6b7280',
-    },
-    progressPercentage: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#7c3aed',
-    },
-    progressBarContainer: {
-        height: 12,
-        backgroundColor: '#f3e8ff',
-        borderRadius: 6,
-        overflow: 'hidden',
-        marginBottom: 8,
-    },
-    progressBar: {
-        height: '100%',
-        backgroundColor: '#7c3aed',
-        borderRadius: 6,
-    },
-    amountsRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    currentAmount: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1f2937',
-    },
-    targetAmount: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#6b7280',
-    },
-    remainingCard: {
-        backgroundColor: '#fef3c7',
-        borderRadius: 12,
-        padding: 16,
-        alignItems: 'center',
-    },
-    remainingLabel: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#92400e',
-        marginBottom: 4,
-    },
-    remainingAmount: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#f59e0b',
-    },
-    amountSection: {
-        backgroundColor: '#fff',
-        marginHorizontal: 20,
-        marginTop: 20,
-        borderRadius: 20,
-        padding: 24,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 5,
-    },
-    sectionLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#6b7280',
-        marginBottom: 12,
-    },
-    amountInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    currencySymbol: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#7c3aed',
-        marginRight: 8,
-    },
-    amountInput: {
-        flex: 1,
-        fontSize: 48,
-        fontWeight: 'bold',
-        color: '#1f2937',
-    },
-    calculationCard: {
-        marginTop: 20,
-        padding: 16,
-        backgroundColor: '#f9fafb',
-        borderRadius: 12,
-    },
-    calculationRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    calculationLabel: {
-        fontSize: 14,
-        color: '#6b7280',
-    },
-    calculationValue: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1f2937',
-    },
-    calculationTotal: {
-        borderTopWidth: 1,
-        borderTopColor: '#e5e7eb',
-        paddingTop: 12,
-        marginTop: 4,
-        marginBottom: 12,
-    },
-    calculationTotalLabel: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#1f2937',
-    },
-    calculationTotalValue: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#7c3aed',
-    },
-    section: {
-        marginHorizontal: 20,
-        marginTop: 20,
-    },
-    textInput: {
-        backgroundColor: '#fff',
-        borderRadius: 12,
-        padding: 16,
-        fontSize: 16,
-        color: '#1f2937',
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-    },
-    quickAmountsGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
-    },
-    quickAmountButton: {
-        flex: 1,
-        minWidth: '45%',
-        backgroundColor: '#fff',
-        borderRadius: 12,
-        padding: 16,
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: '#e5e7eb',
-    },
-    quickAmountButtonSpecial: {
-        backgroundColor: '#f3e8ff',
-        borderColor: '#7c3aed',
-    },
-    quickAmountText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1f2937',
-    },
-    quickAmountSubtext: {
-        fontSize: 12,
-        marginTop: 4,
-    },
-    submitButton: {
-        backgroundColor: '#7c3aed',
-        marginHorizontal: 20,
-        marginTop: 24,
-        borderRadius: 16,
-        padding: 18,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 12,
-        shadowColor: '#7c3aed',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 5,
-    },
-    submitButtonDisabled: {
-        opacity: 0.6,
-    },
-    submitButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+const s = StyleSheet.create({
+    root: { flex: 1, backgroundColor: C.bg },
+    header: { paddingBottom: 20, paddingHorizontal: 20 },
+    headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 10 },
+    backBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
+    headerTitle: { color: C.gold, fontSize: 18, fontWeight: '700' },
+    card: { backgroundColor: C.white, borderRadius: 16, padding: 18, marginBottom: 14, shadowColor: '#000', shadowOpacity: 0.06, shadowOffset: { width: 0, height: 2 }, shadowRadius: 8, elevation: 2 },
+    cardRow: { flexDirection: 'row', alignItems: 'center' },
+    goalName: { fontSize: 18, fontWeight: '700', color: C.navy },
+    goalDesc: { fontSize: 11, color: C.sub, marginTop: 2, marginBottom: 8 },
+    goalAmount: { fontSize: 22, fontWeight: '800', color: C.navy },
+    goalOf: { fontSize: 13, color: C.sub },
+    progressBar: { height: 6, backgroundColor: '#E5E7EB', borderRadius: 3, marginTop: 14, overflow: 'hidden' },
+    progressFill: { height: '100%', backgroundColor: C.gold, borderRadius: 3 },
+    fieldLabel: { fontSize: 11, fontWeight: '600', color: C.sub, letterSpacing: 0.5, marginBottom: 12 },
+    amountRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
+    amountKes: { fontSize: 20, fontWeight: '600', color: C.sub },
+    amountInput: { flex: 1, fontSize: 38, fontWeight: '800', color: C.navy },
+    chips: { flexDirection: 'row', gap: 8, marginTop: 16 },
+    chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: C.border },
+    chipTxt: { fontSize: 13, fontWeight: '600', color: C.sub },
+    pmRow: { flexDirection: 'row', gap: 10 },
+    pmBtn: { flex: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 12, borderWidth: 1.5, borderColor: C.border, gap: 4 },
+    pmBtnActive: { borderColor: C.gold, backgroundColor: '#FFFBEB' },
+    pmLabel: { fontSize: 11, fontWeight: '600', color: C.sub },
+    pmLabelActive: { color: C.gold },
+    noteInput: { borderWidth: 1, borderColor: C.border, borderRadius: 10, padding: 14, fontSize: 14, color: C.text, minHeight: 52 },
+    submitBtn: { backgroundColor: C.gold, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 6 },
+    submitTxt: { color: C.white, fontSize: 17, fontWeight: '700' },
+    // legacy — unused but keeps TS happy
+    container: { flex: 1 },
 });
