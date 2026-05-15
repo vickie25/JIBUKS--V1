@@ -35,21 +35,6 @@ const C = {
   track: '#E9ECEF',
 };
 
-// ─── Mock fallbacks ──────────────────────────────────────────────────────────
-const MOCK_BUDGETS = [
-  { name: 'Food & Groceries', pct: 60 },
-  { name: 'Housing', pct: 100 },
-];
-const MOCK_GOALS = [
-  { name: 'Emergency Fund', currentAmount: 45000, targetAmount: 100000 },
-  { name: 'New Car Fund', currentAmount: 200000, targetAmount: 500000 },
-];
-const MOCK_TX = [
-  { type: 'EXPENSE', amount: 8450, description: 'Carrefour Supermarket', date: new Date().toISOString() },
-  { type: 'INCOME', amount: 120000, description: 'Salary Deposit', date: new Date(Date.now() - 86400000).toISOString() },
-  { type: 'EXPENSE', amount: 1200, description: 'Uber Ride', date: new Date(Date.now() - 2 * 86400000).toISOString() },
-];
-
 // ─── Circular progress ring (quadrant-based, no SVG needed) ──────────────────
 function RingProgress({ pct, size = 88, color = C.accent }: { pct: number; size?: number; color?: string }) {
   const bw = 7;
@@ -178,14 +163,14 @@ export default function HomeScreen() {
     }
   };
 
-  const summary    = dashData?.summary ?? { totalIncome: 142500, totalExpenses: 8000, balance: 142500 };
-  const goals       = dashData?.goals?.slice(0, 4) ?? MOCK_GOALS;
-  const budgets     = dashData?.categorySpending?.slice(0, 3) ?? MOCK_BUDGETS;
-  const recentTx    = dashData?.recentTransactions?.slice(0, 3) ?? MOCK_TX;
+  const summary    = dashData?.summary ?? { totalIncome: 0, totalExpenses: 0, balance: 0 };
+  const goals      = dashData?.goals?.slice(0, 4) ?? [];
+  const budgets    = dashData?.categorySpending?.slice(0, 3) ?? [];
+  const recentTx   = dashData?.recentTransactions?.slice(0, 3) ?? [];
   const alerts: any[] = dashData?.budgetAlerts ?? [];
   const budgetUsedPct = summary.totalIncome > 0
     ? Math.min(Math.round((summary.totalExpenses / summary.totalIncome) * 100), 100)
-    : 79;
+    : 0;
   const familyName = dashData?.familyName
     ?? (user?.name ? `The ${user.name.split(' ').pop()} Family` : 'The Otieno Family');
 
@@ -264,13 +249,21 @@ export default function HomeScreen() {
               <Text style={s.link}>View all</Text>
             </TouchableOpacity>
           </View>
-          {budgets.map((b: any, i: number) => (
-            <BudgetRow
-              key={i}
-              name={b.category || b.name}
-              pct={b.pct ?? (b.budget > 0 ? Math.min(Math.round((b.spent / b.budget) * 100), 100) : 0)}
-            />
-          ))}
+          {budgets.length === 0 ? (
+            <TouchableOpacity style={s.emptyCard} onPress={() => router.push('/monthly-budgets' as any)}>
+              <Ionicons name="wallet-outline" size={28} color={C.textLight} />
+              <Text style={s.emptyTxt}>No budgets set up yet</Text>
+              <Text style={s.emptyLink}>Set up budgets →</Text>
+            </TouchableOpacity>
+          ) : (
+            budgets.map((b: any, i: number) => (
+              <BudgetRow
+                key={i}
+                name={b.category || b.name}
+                pct={b.pct ?? (b.budget > 0 ? Math.min(Math.round((b.spent / b.budget) * 100), 100) : 0)}
+              />
+            ))
+          )}
         </View>
 
         {/* ── SAVINGS GOALS ────────────────────────────────────────── */}
@@ -281,29 +274,37 @@ export default function HomeScreen() {
               <Text style={s.link}>Manage</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -4 }}>
-            {goals.map((g: any, i: number) => {
-              const pct = g.targetAmount > 0
-                ? Math.min(Math.round((g.currentAmount / g.targetAmount) * 100), 100)
-                : 0;
-              const color = [C.success, C.accent, C.warn, C.primary][i % 4];
-              return (
-                <TouchableOpacity key={i} style={s.goalCard} onPress={() => router.push('/financial-goals' as any)}>
-                  <RingProgress pct={pct} size={85} color={color} />
-                  <Text style={s.goalName} numberOfLines={1}>{g.name}</Text>
-                  <Text style={s.goalSub}>
-                    KES {(g.currentAmount / 1000).toFixed(0)}k / {(g.targetAmount / 1000).toFixed(0)}k
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-            <TouchableOpacity style={[s.goalCard, s.goalAdd]} onPress={() => router.push('/financial-goals' as any)}>
-              <View style={s.goalAddIcon}>
-                <Ionicons name="add" size={28} color={C.primary} />
-              </View>
-              <Text style={s.goalName}>Add Goal</Text>
+          {goals.length === 0 ? (
+            <TouchableOpacity style={s.emptyCard} onPress={() => router.push('/add-saving-goals' as any)}>
+              <Ionicons name="flag-outline" size={28} color={C.textLight} />
+              <Text style={s.emptyTxt}>No savings goals yet</Text>
+              <Text style={s.emptyLink}>Create your first goal →</Text>
             </TouchableOpacity>
-          </ScrollView>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -4 }}>
+              {goals.map((g: any, i: number) => {
+                const pct = g.targetAmount > 0
+                  ? Math.min(Math.round((g.currentAmount / g.targetAmount) * 100), 100)
+                  : 0;
+                const color = [C.success, C.accent, C.warn, C.primary][i % 4];
+                return (
+                  <TouchableOpacity key={g.id ?? i} style={s.goalCard} onPress={() => router.push('/financial-goals' as any)}>
+                    <RingProgress pct={pct} size={85} color={color} />
+                    <Text style={s.goalName} numberOfLines={1}>{g.name}</Text>
+                    <Text style={s.goalSub}>
+                      KES {(g.currentAmount / 1000).toFixed(0)}k / {(g.targetAmount / 1000).toFixed(0)}k
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+              <TouchableOpacity style={[s.goalCard, s.goalAdd]} onPress={() => router.push('/add-saving-goals' as any)}>
+                <View style={s.goalAddIcon}>
+                  <Ionicons name="add" size={28} color={C.primary} />
+                </View>
+                <Text style={s.goalName}>Add Goal</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          )}
         </View>
 
         {/* ── UPCOMING ALERTS ──────────────────────────────────────── */}
@@ -342,14 +343,22 @@ export default function HomeScreen() {
               <Text style={s.link}>See History</Text>
             </TouchableOpacity>
           </View>
-          <View style={s.actList}>
-            {recentTx.map((tx: any, i: number, arr: any[]) => (
-              <View key={i}>
-                <ActivityRow tx={tx} />
-                {i < arr.length - 1 && <View style={s.sep} />}
-              </View>
-            ))}
-          </View>
+          {recentTx.length === 0 ? (
+            <TouchableOpacity style={s.emptyCard} onPress={() => router.push('/add-expense' as any)}>
+              <Ionicons name="receipt-outline" size={28} color={C.textLight} />
+              <Text style={s.emptyTxt}>No transactions this month</Text>
+              <Text style={s.emptyLink}>Add your first expense →</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={s.actList}>
+              {recentTx.map((tx: any, i: number, arr: any[]) => (
+                <View key={tx.id ?? i}>
+                  <ActivityRow tx={tx} />
+                  {i < arr.length - 1 && <View style={s.sep} />}
+                </View>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* Bottom padding for FAB + tab bar */}
@@ -489,6 +498,16 @@ const s = StyleSheet.create({
   actDate: { fontSize: 11, color: C.textLight },
   actAmt: { fontSize: 14, fontWeight: '700' },
   sep: { height: 1, backgroundColor: C.border, marginLeft: 72 },
+
+  // Empty states
+  emptyCard: {
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: C.card, borderRadius: 16, padding: 28,
+    borderWidth: 1.5, borderColor: C.border, borderStyle: 'dashed',
+    gap: 6,
+  },
+  emptyTxt:  { fontSize: 14, color: C.textLight, fontWeight: '500' },
+  emptyLink: { fontSize: 13, color: C.primary,   fontWeight: '700' },
 
   // FAB
   fab: {
