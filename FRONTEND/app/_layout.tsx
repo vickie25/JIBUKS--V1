@@ -92,6 +92,7 @@ function AppNavigator() {
         <Stack.Screen name="add-saving-goals" options={{ headerShown: false }} />
         <Stack.Screen name="goal-detail" options={{ headerShown: false }} />
         <Stack.Screen name="add-savings" options={{ headerShown: false }} />
+        <Stack.Screen name="transfer" options={{ headerShown: false }} />
         <Stack.Screen name="contribute-group" options={{ headerShown: false }} />
         <Stack.Screen name="family-dreams" options={{ headerShown: false }} />
         <Stack.Screen name="goal-success" options={{ headerShown: false }} />

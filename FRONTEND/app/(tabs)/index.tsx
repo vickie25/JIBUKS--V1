@@ -15,6 +15,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import apiService from '@/services/api';
+import FABMenu from '@/components/FABMenu';
 
 // ─── Design tokens ──────────────────────────────────────────────────────────
 const C = {
@@ -365,10 +366,7 @@ export default function HomeScreen() {
         <View style={{ height: 110 }} />
       </ScrollView>
 
-      {/* ── FAB ──────────────────────────────────────────────────── */}
-      <TouchableOpacity style={s.fab} onPress={() => router.push('/add-expense' as any)}>
-        <Ionicons name="add" size={30} color={C.white} />
-      </TouchableOpacity>
+      <FABMenu />
     </SafeAreaView>
   );
 }
@@ -509,13 +507,4 @@ const s = StyleSheet.create({
   emptyTxt:  { fontSize: 14, color: C.textLight, fontWeight: '500' },
   emptyLink: { fontSize: 13, color: C.primary,   fontWeight: '700' },
 
-  // FAB
-  fab: {
-    position: 'absolute', bottom: 90, right: 20,
-    width: 56, height: 56, borderRadius: 28,
-    backgroundColor: C.accent,
-    alignItems: 'center', justifyContent: 'center',
-    shadowColor: C.accent, shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4, shadowRadius: 12, elevation: 8,
-  },
 });
