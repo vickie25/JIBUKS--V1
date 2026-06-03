@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import apiService from '@/services/api';
+import FABMenu from '@/components/FABMenu';
 
 const C = {
     navy: '#1a3a8f',
@@ -191,10 +192,7 @@ export default function GoalsTabScreen() {
                 </ScrollView>
             )}
 
-            {/* ── FAB ── */}
-            <TouchableOpacity style={s.fab} onPress={() => router.push('/add-saving-goals' as any)} activeOpacity={0.85}>
-                <Ionicons name="add" size={28} color={C.white} />
-            </TouchableOpacity>
+            <FABMenu />
         </View>
     );
 }
@@ -270,11 +268,4 @@ const s = StyleSheet.create({
     },
     emptyBtnTxt: { color: C.white, fontSize: 15, fontWeight: '700' },
 
-    fab: {
-        position: 'absolute', bottom: 90, right: 20,
-        width: 56, height: 56, borderRadius: 28,
-        backgroundColor: C.gold,
-        alignItems: 'center', justifyContent: 'center',
-        shadowColor: C.gold, shadowOpacity: 0.4, shadowOffset: { width: 0, height: 4 }, shadowRadius: 10, elevation: 6,
-    },
 });
